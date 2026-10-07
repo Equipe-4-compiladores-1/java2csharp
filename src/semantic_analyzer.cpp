@@ -103,7 +103,7 @@ void SemanticAnalyzerVisitor::visit(IfStmtNode* node) {
     if (node->condition) {
         node->condition->accept(this);
         if (inferExprType(node->condition.get()) != "boolean") {
-            std::cerr << "Erro Semântico: A condição do if deve ser do tipo boolean.\n";
+            std::cerr << "[Erro Semantico]: A condição do if deve ser do tipo boolean.\n";
             hasErrors = true;
         }
     }
