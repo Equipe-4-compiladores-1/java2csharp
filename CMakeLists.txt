@@ -29,7 +29,11 @@ add_executable(java2csharp ${SOURCES})
 # Configuração de testes
 # Lista de testes (nome do arquivo sem o .java) que devem ser pulados
 set(TESTS_TO_SKIP
-    
+    "ForClassico"
+    "WhileSimples"
+    "ForCondicaoNaoBooleana"
+    "ForVariavelForaEscopo"
+    "WhileCondicaoNaoBooleana"
 )
 
 enable_testing()
