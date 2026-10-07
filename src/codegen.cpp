@@ -44,10 +44,14 @@ void CSharpCodegenVisitor::visit(ReturnStmtNode* node) {
 }
 
 void CSharpCodegenVisitor::visit(BinaryExprNode* node) {
-    std::cout << "(";
     node->left->accept(this);
     std::cout << " " << node->op << " ";
     node->right->accept(this);
+}
+
+void CSharpCodegenVisitor::visit(ParenthesizedExprNode* node) {
+    std::cout << "(";
+    if (node->expr) node->expr->accept(this);
     std::cout << ")";
 }
 

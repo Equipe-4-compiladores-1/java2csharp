@@ -59,6 +59,9 @@ void SemanticAnalyzerVisitor::visit(BinaryExprNode* node) {
     if (node->left) node->left->accept(this);
     if (node->right) node->right->accept(this);
 }
+void SemanticAnalyzerVisitor::visit(ParenthesizedExprNode* node) {
+    if (node->expr) node->expr->accept(this);
+}
 void SemanticAnalyzerVisitor::visit(ReturnStmtNode* node) {
     if (node->expr) node->expr->accept(this);
 }
@@ -77,6 +80,10 @@ void SemanticAnalyzerVisitor::visit(MethodCallStmtNode* node) {
 void SemanticAnalyzerVisitor::visit(StringNode* node) {}
 
 std::string SemanticAnalyzerVisitor::inferExprType(ExprNode* node) {
+    if (auto parenthesized = dynamic_cast<ParenthesizedExprNode*>(node)) {
+        return inferExprType(parenthesized->expr.get());
+    }
+
     if (auto literal = dynamic_cast<LiteralNode*>(node)) {
         if (literal->value == "true" || literal->value == "false") return "boolean";
 
