@@ -27,39 +27,54 @@ set(SOURCES
 
 add_executable(java2csharp ${SOURCES})
 # Configuração de testes
+# Lista de testes (nome do arquivo sem o .java) que devem ser pulados
+set(TESTS_TO_SKIP
+    
+)
+
 enable_testing()
 # 1. Sucesso
 file(GLOB SUCCESS_FILES "${CMAKE_CURRENT_SOURCE_DIR}/tests/input/success/*.java")
 foreach(INPUT_FILE IN LISTS SUCCESS_FILES)
     get_filename_component(TEST_NAME ${INPUT_FILE} NAME_WE)
-    add_test(NAME "Compila_${TEST_NAME}" COMMAND java2csharp ${INPUT_FILE})
-    add_test(NAME "Valida_${TEST_NAME}" COMMAND diff -u -w --strip-trailing-cr Saida.cs ${CMAKE_CURRENT_SOURCE_DIR}/tests/expected/${TEST_NAME}_expected.cs)
-    set_tests_properties("Valida_${TEST_NAME}" PROPERTIES DEPENDS "Compila_${TEST_NAME}")
+    if(NOT TEST_NAME IN_LIST TESTS_TO_SKIP)
+        add_test(NAME "Compila_${TEST_NAME}" COMMAND java2csharp ${INPUT_FILE})
+        add_test(NAME "Valida_${TEST_NAME}" COMMAND diff -u -w --strip-trailing-cr Saida.cs ${CMAKE_CURRENT_SOURCE_DIR}/tests/expected/${TEST_NAME}_expected.cs)
+        set_tests_properties("Valida_${TEST_NAME}" PROPERTIES DEPENDS "Compila_${TEST_NAME}")
+    endif()
 endforeach()
 
 # 2. Falha: Léxico
 file(GLOB FAILURE_LEXICAL "${CMAKE_CURRENT_SOURCE_DIR}/tests/input/failure/lexical/*.java")
 foreach(INPUT_FILE IN LISTS FAILURE_LEXICAL)
     get_filename_component(TEST_NAME ${INPUT_FILE} NAME_WE)
-    add_test(NAME "Falha_Lexico_${TEST_NAME}" COMMAND java2csharp ${INPUT_FILE})
-    set_tests_properties("Falha_Lexico_${TEST_NAME}" PROPERTIES  PASS_REGULAR_EXPRESSION "Erro Lexico")
+    if(NOT TEST_NAME IN_LIST TESTS_TO_SKIP)
+        add_test(NAME "Falha_Lexico_${TEST_NAME}" COMMAND java2csharp ${INPUT_FILE})
+        set_tests_properties("Falha_Lexico_${TEST_NAME}" PROPERTIES  PASS_REGULAR_EXPRESSION "Erro Lexico")
+    endif()
 endforeach()
+
 # 3. Falha: Sintaxe
 file(GLOB FAILURE_SYNTAX "${CMAKE_CURRENT_SOURCE_DIR}/tests/input/failure/sintax/*.java")
 foreach(INPUT_FILE IN LISTS FAILURE_SYNTAX)
-get_filename_component(TEST_NAME ${INPUT_FILE} NAME_WE)
-add_test(NAME "Falha_Sintaxe_${TEST_NAME}" COMMAND java2csharp ${INPUT_FILE})
-set_tests_properties("Falha_Sintaxe_${TEST_NAME}" PROPERTIES  PASS_REGULAR_EXPRESSION "Erro Sintatico")
+    get_filename_component(TEST_NAME ${INPUT_FILE} NAME_WE)
+    if(NOT TEST_NAME IN_LIST TESTS_TO_SKIP)
+        add_test(NAME "Falha_Sintaxe_${TEST_NAME}" COMMAND java2csharp ${INPUT_FILE})
+        set_tests_properties("Falha_Sintaxe_${TEST_NAME}" PROPERTIES  PASS_REGULAR_EXPRESSION "Erro Sintatico")
+    endif()
 endforeach()
+
 # 4. Falha: Semântica
 file(GLOB FAILURE_SEMANTIC "${CMAKE_CURRENT_SOURCE_DIR}/tests/input/failure/semantic/*.java")
 foreach(INPUT_FILE IN LISTS FAILURE_SEMANTIC)
-get_filename_component(TEST_NAME ${INPUT_FILE} NAME_WE)
-add_test(NAME "Falha_Semantica_${TEST_NAME}" COMMAND java2csharp ${INPUT_FILE})
-set_tests_properties("Falha_Semantica_${TEST_NAME}" PROPERTIES  PASS_REGULAR_EXPRESSION "Erro Semantico")
+    get_filename_component(TEST_NAME ${INPUT_FILE} NAME_WE)
+    if(NOT TEST_NAME IN_LIST TESTS_TO_SKIP)
+        add_test(NAME "Falha_Semantica_${TEST_NAME}" COMMAND java2csharp ${INPUT_FILE})
+        set_tests_properties("Falha_Semantica_${TEST_NAME}" PROPERTIES  PASS_REGULAR_EXPRESSION "Erro Semantico")
+    endif()
 endforeach()
 
-# Fim  da configuração de testes
+# Fim da configuração de testes
 # Configuração do relatório de cobertura de teste
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --coverage -O0 -g")
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --coverage")
