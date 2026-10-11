@@ -25,11 +25,13 @@ int main(int argc, char** argv) {
         std::cout << "Lendo da entrada padrao (Ctrl+D para encerrar)..." << std::endl;
     }
 
-    // Executa a Análise Sintática
     if (yyparse() == 0) {
 
         SemanticAnalyzerVisitor semantic_analyzer;
-        if (!semantic_analyzer.analyze(rootNode)) {
+        if (rootNode) {
+            rootNode->accept(&semantic_analyzer);
+        }
+        if (semantic_analyzer.hasErrors()) {
             std::cerr << "\nCompilação abortada devido a erros semânticos.\n" << std::endl;
             return 1;
         }
