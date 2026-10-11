@@ -9,12 +9,12 @@ void SymbolTable::enterScope() {
 }   
 
 void SymbolTable::exitScope() {
-    if (!scopes.empty()) {
+    if (scopes.size() > 1) {
         scopes.pop_back();
     }
 }
 
-bool SymbolTable::defineSymbol(const std::string& name, const std::string& type) {
+bool SymbolTable::defineSymbol(const std::string& name, const SymbolInfo& info) {
     if (scopes.empty()) return false;
 
     auto& currentScope = scopes.back();
@@ -23,8 +23,12 @@ bool SymbolTable::defineSymbol(const std::string& name, const std::string& type)
         return false;
     }
 
-    currentScope[name] = SymbolInfo{type};
+    currentScope[name] = info;
     return true;
+}
+
+bool SymbolTable::defineSymbol(const std::string& name, const std::string& type, SymbolKind kind, bool initialized, int line) {
+    return defineSymbol(name, SymbolInfo{name, type, kind, initialized, line});
 }
 
 bool SymbolTable::resolveSymbol(const std::string& name, SymbolInfo& outInfo) {
@@ -36,4 +40,9 @@ bool SymbolTable::resolveSymbol(const std::string& name, SymbolInfo& outInfo) {
         }
     }
     return false;
+}
+
+bool SymbolTable::isDeclaredInCurrentScope(const std::string& name) const {
+    if (scopes.empty()) return false;
+    return scopes.back().find(name) != scopes.back().end();
 }
