@@ -22,6 +22,8 @@ public:
     void visit(MethodCallExprNode* node) override;
     void visit(MethodCallStmtNode* node) override;
     void visit(IfStmtNode* node) override;
+    void visit(WhileStmtNode* node) override;
+    void visit(ForStmtNode* node) override;
 };
 
 #endif

@@ -17,6 +17,8 @@ class StringNode;
 class MethodCallExprNode;
 class MethodCallStmtNode;
 class IfStmtNode;
+class WhileStmtNode;
+class ForStmtNode;
 
 // Padrão Visitor para percorrer a AST
 class ASTVisitor {
@@ -124,6 +126,33 @@ struct Param {
     Param(const std::string& t, const std::string& n) : type(t), name(n) {}
 };
 
+class WhileStmtNode : public StmtNode {
+public:
+    std::shared_ptr<ExprNode> condition;
+    std::vector<std::shared_ptr<std::StmtNode>> body;
+    WhileStmtNode(std::shared_ptr<ExprNode> cond, std::vector<std::shared_ptr<StmtNode>> b)
+        : condition(cond), body(b) {}
+
+    void accept(ASTVisitor* visitor) override {
+        visitor->visit(this);
+    }
+};
+
+class ForStmtNode : public StmtNode {
+public:
+    std::shared_ptr<StmtNode> init; 
+    std::shared_ptr<ExprNode> condition;
+    std::shared_ptr<StmtNode> increment;
+    std::vector<std::shared_ptr<StmtNode>> body;
+
+    ForStmtNode(std::shared_ptr<StmtNode> i, std::shared_ptr<ExprNode> cond, 
+                std::shared_ptr<StmtNode> inc, std::vector<std::shared_ptr<StmtNode>> b)
+        : init(i), condition(cond), increment(inc), body(b) {}
+
+    void accept(ASTVisitor* visitor) override {
+        visitor->visit(this);
+    }
+};
 
 // --- FUNÇÃO ---
 class FunctionDeclNode : public ASTNode {
