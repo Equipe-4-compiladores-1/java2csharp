@@ -1,131 +1,233 @@
 #include "semantic_analyzer.h"
+#include <cctype>
 
-bool SemanticAnalyzerVisitor::analyze(const std::shared_ptr<ClassDeclNode>& root) {
-    if (root) root->accept(this);
-    return !hasErrors;
+void SemanticAnalyzerVisitor::reportError(const std::string& message) {
+    std::cerr << "[Erro Semantico] " << message << std::endl;
+    hasSemanticError = true;
+}
+
+bool SemanticAnalyzerVisitor::areTypesCompatible(const std::string& targetType, const std::string& sourceType) {
+    std::string normTarget = (targetType == "bool") ? "boolean" : targetType;
+    std::string normSource = (sourceType == "bool") ? "boolean" : sourceType;
+
+    if (normTarget == "string") normTarget = "String";
+    if (normSource == "string") normSource = "String";
+
+    if (normTarget == normSource) return true;
+
+    if (normTarget == "double" && (normSource == "float" || normSource == "long" || normSource == "int")) return true;
+    if (normTarget == "float" && (normSource == "double" || normSource == "long" || normSource == "int")) return true;
+    if (normTarget == "long" && normSource == "int") return true;
+    
+    return false;
+}
+
+std::string SemanticAnalyzerVisitor::getPromotedType(const std::string& type1, const std::string& type2, const std::string& op) {
+    std::string t1 = (type1 == "bool") ? "boolean" : type1;
+    std::string t2 = (type2 == "bool") ? "boolean" : type2;
+
+    if (op == "+" && (t1 == "String" || t2 == "String")) {
+        return "String";
+    }
+
+    if (op == "==" || op == "!=" || op == "<" || op == ">" || op == "<=" || op == ">=" || op == "&&" || op == "||") {
+        if (areTypesCompatible(t1, t2) || areTypesCompatible(t2, t1)) {
+            return "boolean";
+        }
+        return "unknown";
+    }
+
+    if (t1 == "double" || t2 == "double") return "double";
+    if (t1 == "float" || t2 == "float") return "float";
+    if (t1 == "long" || t2 == "long") return "long";
+    if (t1 == "int" && t2 == "int") return "int";
+
+    return "unknown";
 }
 
 void SemanticAnalyzerVisitor::visit(ClassDeclNode* node) {
-    for (auto& func : node->functions) {
+    for (const auto& func : node->functions) {
+        SymbolInfo info{func->name, func->returnType, SymbolKind::FUNCTION, true};
+        if (!symbolTable.defineSymbol(func->name, info)) {
+            reportError("Metodo '" + func->name + "' ja declarado na classe '" + node->className + "'.");
+        }
+    }
+
+    for (const auto& func : node->functions) {
         func->accept(this);
     }
 }
 
 void SemanticAnalyzerVisitor::visit(FunctionDeclNode* node) {
-    symTable.enterScope();
+    symbolTable.enterScope();
+    currentFunctionReturnType = node->returnType;
 
     for (const auto& param : node->params) {
-        if (!symTable.defineSymbol(param.name, param.type)) {
-            std::cerr << "[Erro Semantico]: Parâmetro '" << param.name
-                      << "' redefinido na função '" << node->name << "'.\n";
-            hasErrors = true;
+        SymbolInfo info{param.name, param.type, SymbolKind::PARAMETER, true};
+        if (!symbolTable.defineSymbol(param.name, info)) {
+            reportError("Variavel '" + param.name + "' ja foi declarada neste escopo.");
         }
     }
 
-    for (auto& stmt : node->body) {
+    for (const auto& stmt : node->body) {
         if (stmt) stmt->accept(this);
     }
 
-    symTable.exitScope();
+    symbolTable.exitScope();
 }
 
 void SemanticAnalyzerVisitor::visit(VarDeclNode* node) {
+    std::string initType;
     if (node->initExpr) {
         node->initExpr->accept(this);
+        initType = currentExprType;
+
+        if (initType != "unknown" && !areTypesCompatible(node->type, initType)) {
+            reportError("Atribuicao incompativel para a variavel '" + node->name +
+                        "'. Esperado: '" + node->type + "', Recebido: '" + initType + "'.");
+        }
     }
-    
-    if (!symTable.defineSymbol(node->name, node->type)) {
-        std::cerr << "[Erro Semantico]: Variável '" << node->name 
-                  << "' já foi declarada neste escopo.\n";
-        hasErrors = true;
+
+    SymbolInfo info{node->name, node->type, SymbolKind::VARIABLE, node->initExpr != nullptr};
+    if (!symbolTable.defineSymbol(node->name, info)) {
+        reportError("Variavel '" + node->name + "' ja foi declarada neste escopo.");
     }
+}
+
+void SemanticAnalyzerVisitor::visit(ParenthesizedExprNode* node) {
+    if (node->expr) {
+        node->expr->accept(this);
+    }
+}
+
+void SemanticAnalyzerVisitor::visit(ReturnStmtNode* node) {
+    if (node->expr) {
+        node->expr->accept(this);
+        if (currentFunctionReturnType == "void") {
+            reportError("Metodo 'void' nao pode retornar valor.");
+        } else if (currentExprType != "unknown" && !areTypesCompatible(currentFunctionReturnType, currentExprType)) {
+            reportError("Retorno incompativel no metodo. Esperado: '" +
+                        currentFunctionReturnType + "', Recebido: '" + currentExprType + "'.");
+        }
+    } else {
+        if (currentFunctionReturnType != "void") {
+            reportError("Metodo com retorno '" + currentFunctionReturnType + "' deve retornar um valor.");
+        }
+    }
+}
+
+void SemanticAnalyzerVisitor::visit(PrintStmtNode* node) {
+    if (node->expr) {
+        node->expr->accept(this);
+    }
+}
+
+void SemanticAnalyzerVisitor::visit(PrintfStmtNode* node) {
+    for (const auto& arg : node->args) {
+        if (arg) arg->accept(this);
+    }
+}
+
+void SemanticAnalyzerVisitor::visit(MethodCallStmtNode* node) {
+    SymbolInfo info;
+    if (!symbolTable.resolveSymbol(node->methodName, info)) {
+        if (node->methodName.find('.') == std::string::npos) {
+            reportError("Chamada a metodo nao declarado '" + node->methodName + "'.");
+        }
+    }
+
+    for (const auto& arg : node->args) {
+        if (arg) arg->accept(this);
+    }
+}
+
+void SemanticAnalyzerVisitor::visit(MethodCallExprNode* node) {
+    SymbolInfo info;
+    std::string callType = "unknown";
+
+    if (symbolTable.resolveSymbol(node->methodName, info)) {
+        callType = info.type;
+    } else if (node->methodName.find('.') == std::string::npos) {
+        reportError("Chamada a metodo nao declarado '" + node->methodName + "'.");
+    }
+
+    for (const auto& arg : node->args) {
+        if (arg) arg->accept(this);
+    }
+
+    currentExprType = callType;
 }
 
 void SemanticAnalyzerVisitor::visit(LiteralNode* node) {
-    if (node->value == "true" || node->value == "false") {
+    const std::string& val = node->value;
+
+    SymbolInfo info;
+    if (symbolTable.resolveSymbol(val, info)) {
+        currentExprType = info.type;
         return;
     }
 
-    if (!node->value.empty() && isalpha(node->value[0])) {
-        SymbolInfo info;
-        if (!symTable.resolveSymbol(node->value, info)) {
-            std::cerr << "[Erro Semantico]: Uso de variável não declarada '" << node->value << "'.\n";
-            hasErrors = true;
+    if (!val.empty() && (std::isdigit(val[0]) || val[0] == '-')) {
+        if (val.find('.') != std::string::npos) {
+            currentExprType = "double";
+        } else {
+            currentExprType = "int";
         }
+    } else if (val == "true" || val == "false") {
+        currentExprType = "boolean";
+    } else if (!val.empty() && (val[0] == '"' || val[0] == '\'')) {
+        currentExprType = (val[0] == '"') ? "String" : "char";
+    } else {
+        if (!val.empty() && (std::isalpha(val[0]) || val[0] == '_')) {
+            reportError("Variavel '" + val + "' nao declarada.");
+        }
+        currentExprType = "unknown";
     }
+}
+
+void SemanticAnalyzerVisitor::visit(StringNode* node) {
+    currentExprType = "String";
 }
 
 void SemanticAnalyzerVisitor::visit(BinaryExprNode* node) {
-    if (node->left) node->left->accept(this);
-    if (node->right) node->right->accept(this);
-}
-void SemanticAnalyzerVisitor::visit(ParenthesizedExprNode* node) {
-    if (node->expr) node->expr->accept(this);
-}
-void SemanticAnalyzerVisitor::visit(ReturnStmtNode* node) {
-    if (node->expr) node->expr->accept(this);
-}
-void SemanticAnalyzerVisitor::visit(PrintStmtNode* node) {
-    if (node->expr) node->expr->accept(this);
-}
-void SemanticAnalyzerVisitor::visit(PrintfStmtNode* node) {
-    for (auto& arg : node->args) arg->accept(this);
-}
-void SemanticAnalyzerVisitor::visit(MethodCallExprNode* node) {
-    for (auto& arg : node->args) arg->accept(this);
-}
-void SemanticAnalyzerVisitor::visit(MethodCallStmtNode* node) {
-    for (auto& arg : node->args) arg->accept(this);
-}
-void SemanticAnalyzerVisitor::visit(StringNode* node) {}
+    node->left->accept(this);
+    std::string leftType = currentExprType;
 
-std::string SemanticAnalyzerVisitor::inferExprType(ExprNode* node) {
-    if (auto parenthesized = dynamic_cast<ParenthesizedExprNode*>(node)) {
-        return inferExprType(parenthesized->expr.get());
+    node->right->accept(this);
+    std::string rightType = currentExprType;
+
+    if (leftType == "unknown" || rightType == "unknown") {
+        currentExprType = "unknown";
+        return;
     }
 
-    if (auto literal = dynamic_cast<LiteralNode*>(node)) {
-        if (literal->value == "true" || literal->value == "false") return "boolean";
-
-        SymbolInfo info;
-        if (symTable.resolveSymbol(literal->value, info)) return info.type;
-        if (literal->value.find('.') != std::string::npos) return "double";
-        return "int";
+    std::string resultType = getPromotedType(leftType, rightType, node->op);
+    if (resultType == "unknown") {
+        reportError("Operacao '" + node->op + "' invalida entre os tipos '" + leftType + "' e '" + rightType + "'.");
     }
 
-    if (dynamic_cast<StringNode*>(node)) return "String";
-
-    if (auto binary = dynamic_cast<BinaryExprNode*>(node)) {
-        if (binary->op == "==" || binary->op == "!=" || binary->op == "<" ||
-            binary->op == "<=" || binary->op == ">" || binary->op == ">=") {
-            return "boolean";
-        }
-        return inferExprType(binary->left.get());
-    }
-
-    return "unknown";
+    currentExprType = resultType;
 }
 
 void SemanticAnalyzerVisitor::visit(IfStmtNode* node) {
     if (node->condition) {
         node->condition->accept(this);
-        if (inferExprType(node->condition.get()) != "boolean") {
-            std::cerr << "[Erro Semantico]: A condição do if deve ser do tipo boolean.\n";
-            hasErrors = true;
+        if (currentExprType != "unknown" && currentExprType != "boolean" && currentExprType != "bool") {
+            reportError("A condicao da instrucao 'if' deve ser do tipo boolean. Recebido: '" + currentExprType + "'.");
         }
     }
 
-    symTable.enterScope();
-    for (auto& stmt : node->thenBody) {
+    symbolTable.enterScope();
+    for (const auto& stmt : node->thenBody) {
         if (stmt) stmt->accept(this);
     }
-    symTable.exitScope();
+    symbolTable.exitScope();
 
     if (node->hasElse) {
-        symTable.enterScope();
-        for (auto& stmt : node->elseBody) {
+        symbolTable.enterScope();
+        for (const auto& stmt : node->elseBody) {
             if (stmt) stmt->accept(this);
         }
-        symTable.exitScope();
+        symbolTable.exitScope();
     }
 }
