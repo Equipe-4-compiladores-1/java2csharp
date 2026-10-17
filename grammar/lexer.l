@@ -12,6 +12,8 @@
 [ \t\r\n]+          ; // Ignora espaços em branco
 
 "class"             { return CLASS; }
+"byte"              { return TYPE_BYTE; }
+"short"             { return TYPE_SHORT; }
 "int"               { return TYPE_INT; }
 "double"            { return TYPE_DOUBLE; } 
 "float"             { return TYPE_FLOAT; }  
