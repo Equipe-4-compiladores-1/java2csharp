@@ -171,7 +171,8 @@ var_decl:
 
 
 expr:
-      INT_LITERAL { $$ = new LiteralNode($1); free($1); }
+    '(' expr ')' { $$ = new ParenthesizedExprNode(std::shared_ptr<ExprNode>($2)); }
+    | INT_LITERAL { $$ = new LiteralNode($1); free($1); }
     | FLOAT_LITERAL   { $$ = new LiteralNode($1); free($1); } 
     | CHAR_LITERAL    { $$ = new LiteralNode($1); free($1); }
     | STRING_LITERAL { $$ = new StringNode($1); free($1); }

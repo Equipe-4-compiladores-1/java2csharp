@@ -94,6 +94,12 @@ void SemanticAnalyzerVisitor::visit(VarDeclNode* node) {
     }
 }
 
+void SemanticAnalyzerVisitor::visit(ParenthesizedExprNode* node) {
+    if (node->expr) {
+        node->expr->accept(this);
+    }
+}
+
 void SemanticAnalyzerVisitor::visit(ReturnStmtNode* node) {
     if (node->expr) {
         node->expr->accept(this);
@@ -137,18 +143,19 @@ void SemanticAnalyzerVisitor::visit(MethodCallStmtNode* node) {
 
 void SemanticAnalyzerVisitor::visit(MethodCallExprNode* node) {
     SymbolInfo info;
+    std::string callType = "unknown";
+
     if (symbolTable.resolveSymbol(node->methodName, info)) {
-        currentExprType = info.type;
-    } else {
-        if (node->methodName.find('.') == std::string::npos) {
-            reportError("Chamada a metodo nao declarado '" + node->methodName + "'.");
-        }
-        currentExprType = "unknown";
+        callType = info.type;
+    } else if (node->methodName.find('.') == std::string::npos) {
+        reportError("Chamada a metodo nao declarado '" + node->methodName + "'.");
     }
 
     for (const auto& arg : node->args) {
         if (arg) arg->accept(this);
     }
+
+    currentExprType = callType;
 }
 
 void SemanticAnalyzerVisitor::visit(LiteralNode* node) {
