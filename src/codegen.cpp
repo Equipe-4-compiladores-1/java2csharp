@@ -1,6 +1,14 @@
 #include "codegen.h"
 #include <sstream>
 
+namespace {
+std::string toCSharpType(const std::string& javaType) {
+    if (javaType == "boolean") return "bool";
+    if (javaType == "byte") return "sbyte";
+    return javaType;
+}
+}
+
 void CSharpCodegenVisitor::generateProgram(const std::shared_ptr<ClassDeclNode>& root) {
     if (!root) return;
 
@@ -27,8 +35,7 @@ void CSharpCodegenVisitor::visit(ClassDeclNode* node) {
 
 
 void CSharpCodegenVisitor::visit(VarDeclNode* node) {
-    std::string type = (node->type == "boolean") ? "bool" : node->type;
-    std::cout << "            " << type << " " << node->name << " = ";
+    std::cout << "            " << toCSharpType(node->type) << " " << node->name << " = ";
     if (node->initExpr) {
         node->initExpr->accept(this);
     }
@@ -121,7 +128,7 @@ void CSharpCodegenVisitor::visit(FunctionDeclNode* node) {
     std::string methodName = (node->name == "main") ? "Main" : node->name;
 
     // Escreve a assinatura usando a nossa nova variável 'methodName'
-    std::cout << "        public static " << node->returnType << " " << methodName << "(";
+    std::cout << "        public static " << toCSharpType(node->returnType) << " " << methodName << "(";
     
     // Tratamento especial para os parâmetros do main
     if (node->name == "main") {
@@ -129,7 +136,7 @@ void CSharpCodegenVisitor::visit(FunctionDeclNode* node) {
     } else {
         // Imprime a lista de parâmetros dinâmica
         for (size_t i = 0; i < node->params.size(); ++i) {
-            std::cout << node->params[i].type << " " << node->params[i].name;
+            std::cout << toCSharpType(node->params[i].type) << " " << node->params[i].name;
             if (i < node->params.size() - 1) {
                 std::cout << ", ";
             }

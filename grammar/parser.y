@@ -26,7 +26,7 @@ std::shared_ptr<ClassDeclNode> rootNode;
 }
 
 %token <sval> IDENTIFIER INT_LITERAL FLOAT_LITERAL CHAR_LITERAL STRING_LITERAL
-%token TYPE_INT TYPE_DOUBLE TYPE_FLOAT TYPE_CHAR TYPE_LONG TYPE_BOOL TYPE_VOID
+%token TYPE_BYTE TYPE_SHORT TYPE_INT TYPE_DOUBLE TYPE_FLOAT TYPE_CHAR TYPE_LONG TYPE_BOOL TYPE_VOID
 %token RETURN CLASS PUBLIC STATIC TYPE_STRING PRINT PRINTLN PRINTF
 %token IF ELSE TRUE FALSE
 %token EQ NE LT LE GT GE
@@ -62,7 +62,9 @@ function_list:
     ;
 
 type_specifier:
-    TYPE_INT  { $$ = strdup("int"); }
+    TYPE_BYTE { $$ = strdup("byte"); }
+    | TYPE_SHORT { $$ = strdup("short"); }
+    | TYPE_INT  { $$ = strdup("int"); }
     | TYPE_BOOL { $$ = strdup("boolean"); }
     | TYPE_VOID { $$ = strdup("void"); }
     | TYPE_DOUBLE { $$ = strdup("double"); }

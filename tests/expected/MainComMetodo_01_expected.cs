@@ -13,7 +13,7 @@ namespace TranspiledProgram {
         }
 
         public static int calcular(int a, int b) {
-            return (a * b);
+            return a * b;
         }
 
     }

@@ -14,16 +14,20 @@ O **Analisador Semântico** (`SemanticAnalyzerVisitor`) é responsável por vali
 ### 2. Compatibilidade e Promoção de Tipos (*Widening Conversions*)
 A atribuição ou retorno de valores permite conversões implícitas de alargamento de tipo conforme a hierarquia abaixo:
 
-$$\text{int} \longrightarrow \text{long} \longrightarrow \text{float} \longrightarrow \text{double}$$
+$$\text{byte} \longrightarrow \text{short} \longrightarrow \text{int} \longrightarrow \text{long} \longrightarrow \text{float} \longrightarrow \text{double}$$
 
 | Tipo Alvo (`target`) | Tipos Aceitos (`source`) |
 | :--- | :--- |
-| `double` | `double`, `float`, `long`, `int` |
-| `float` | `float`, `double` *(literal)*, `long`, `int` |
-| `long` | `long`, `int` |
-| `int` | `int` |
+| `byte` | `byte` |
+| `short` | `short`, `byte` |
+| `int` | `int`, `short`, `byte` |
+| `long` | `long`, `int`, `short`, `byte` |
+| `double` | `double`, `float`, `long`, `int`, `short`, `byte` |
+| `float` | `float`, `double` *(literal)*, `long`, `int`, `short`, `byte` |
 | `boolean` | `boolean`, `bool` |
 | `String` | `String`, `string` |
+
+Em expressões aritméticas, `byte` e `short` são promovidos a `int`, como em Java.
 
 ### 3. Validação de Expressões e Operadores
 * **Operadores Aritméticos (`+`, `-`, `*`, `/`)**: Requerem operandos numéricos compatíveis. A operação promove o tipo do resultado para o maior tipo envolvido.
