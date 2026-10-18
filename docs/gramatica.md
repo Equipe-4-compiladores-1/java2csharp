@@ -8,7 +8,7 @@ O parser está configurado para reconhecer as seguintes declarações e express�
 
 ### 1. Tipos de Dados Básicos
 O sistema de tipos suporta mapeamento direto.
-* `int`, `float`, `double`, `boolean`, `char`, `void`, `String`
+* `byte`, `short`, `int`, `long`, `float`, `double`, `boolean`, `char`, `void`, `String`
 
 ### 2. Declaração de Classes e Main
 O ponto de entrada do programa exige uma classe base e o método estático por padrão.

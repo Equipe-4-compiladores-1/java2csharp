@@ -26,7 +26,7 @@ std::shared_ptr<ClassDeclNode> rootNode;
 }
 
 %token <sval> IDENTIFIER INT_LITERAL FLOAT_LITERAL CHAR_LITERAL STRING_LITERAL
-%token TYPE_INT TYPE_DOUBLE TYPE_FLOAT TYPE_CHAR TYPE_LONG TYPE_BOOL TYPE_VOID
+%token TYPE_BYTE TYPE_SHORT TYPE_INT TYPE_DOUBLE TYPE_FLOAT TYPE_CHAR TYPE_LONG TYPE_BOOL TYPE_VOID
 %token RETURN CLASS PUBLIC STATIC TYPE_STRING PRINT PRINTLN PRINTF
 %token IF ELSE TRUE FALSE
 %token WHILE FOR
@@ -65,7 +65,9 @@ function_list:
     ;
 
 type_specifier:
-    TYPE_INT  { $$ = strdup("int"); }
+    TYPE_BYTE { $$ = strdup("byte"); }
+    | TYPE_SHORT { $$ = strdup("short"); }
+    | TYPE_INT  { $$ = strdup("int"); }
     | TYPE_BOOL { $$ = strdup("boolean"); }
     | TYPE_VOID { $$ = strdup("void"); }
     | TYPE_DOUBLE { $$ = strdup("double"); }
@@ -209,7 +211,8 @@ assign_stmt:
     ;
 
 expr:
-      INT_LITERAL { $$ = new LiteralNode($1); free($1); }
+    '(' expr ')' { $$ = new ParenthesizedExprNode(std::shared_ptr<ExprNode>($2)); }
+    | INT_LITERAL { $$ = new LiteralNode($1); free($1); }
     | FLOAT_LITERAL   { $$ = new LiteralNode($1); free($1); } 
     | CHAR_LITERAL    { $$ = new LiteralNode($1); free($1); }
     | STRING_LITERAL { $$ = new StringNode($1); free($1); }

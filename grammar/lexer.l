@@ -25,6 +25,8 @@ WHITESPACE  [ \t\r\n]+
 "class"             { return CLASS; }
 "public"            { return PUBLIC; }
 "static"            { return STATIC; }
+"byte"              { return TYPE_BYTE; }
+"short"             { return TYPE_SHORT; }
 "int"               { return TYPE_INT; }
 "double"            { return TYPE_DOUBLE; } 
 "float"             { return TYPE_FLOAT; }  

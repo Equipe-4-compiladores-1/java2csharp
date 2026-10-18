@@ -6,6 +6,14 @@
 // 1. ESTRUTURA DO PROGRAMA (Top-Level)
 // =========================================================================
 
+namespace {
+std::string toCSharpType(const std::string& javaType) {
+    if (javaType == "boolean") return "bool";
+    if (javaType == "byte") return "sbyte";
+    return javaType;
+}
+}
+
 void CSharpCodegenVisitor::generateProgram(const std::shared_ptr<ClassDeclNode>& root) {
     if (!root) return;
 
@@ -130,7 +138,6 @@ void CSharpCodegenVisitor::visit(IfStmtNode* node) {
     } else {
         std::cout << "\n";
     }
-}
 
 void CSharpCodegenVisitor::visit(WhileStmtNode* node) {
     printIndent();
@@ -274,5 +281,11 @@ void CSharpCodegenVisitor::visit(MethodCallExprNode* node) {
             std::cout << ", ";
         }
     }
+    std::cout << ")";
+}
+
+void CSharpCodegenVisitor::visit(ParenthesizedExprNode* node) {
+    std::cout << "(";
+    if (node->expr) node->expr->accept(this);
     std::cout << ")";
 }

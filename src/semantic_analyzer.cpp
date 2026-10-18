@@ -15,9 +15,13 @@ bool SemanticAnalyzerVisitor::areTypesCompatible(const std::string& targetType, 
 
     if (normTarget == normSource) return true;
 
-    if (normTarget == "double" && (normSource == "float" || normSource == "long" || normSource == "int")) return true;
-    if (normTarget == "float" && (normSource == "double" || normSource == "long" || normSource == "int")) return true;
-    if (normTarget == "long" && normSource == "int") return true;
+    if (normTarget == "short" && normSource == "byte") return true;
+    if (normTarget == "int" && (normSource == "short" || normSource == "byte")) return true;
+    if (normTarget == "long" && (normSource == "int" || normSource == "short" || normSource == "byte")) return true;
+    if (normTarget == "double" && (normSource == "float" || normSource == "long" || normSource == "int" ||
+                                   normSource == "short" || normSource == "byte")) return true;
+    if (normTarget == "float" && (normSource == "double" || normSource == "long" || normSource == "int" ||
+                                  normSource == "short" || normSource == "byte")) return true;
     
     return false;
 }
@@ -25,6 +29,9 @@ bool SemanticAnalyzerVisitor::areTypesCompatible(const std::string& targetType, 
 std::string SemanticAnalyzerVisitor::getPromotedType(const std::string& type1, const std::string& type2, const std::string& op) {
     std::string t1 = (type1 == "bool") ? "boolean" : type1;
     std::string t2 = (type2 == "bool") ? "boolean" : type2;
+
+    if (t1 == "byte" || t1 == "short") t1 = "int";
+    if (t2 == "byte" || t2 == "short") t2 = "int";
 
     if (op == "+" && (t1 == "String" || t2 == "String")) {
         return "String";
@@ -94,6 +101,12 @@ void SemanticAnalyzerVisitor::visit(VarDeclNode* node) {
     }
 }
 
+void SemanticAnalyzerVisitor::visit(ParenthesizedExprNode* node) {
+    if (node->expr) {
+        node->expr->accept(this);
+    }
+}
+
 void SemanticAnalyzerVisitor::visit(ReturnStmtNode* node) {
     if (node->expr) {
         node->expr->accept(this);
@@ -137,18 +150,19 @@ void SemanticAnalyzerVisitor::visit(MethodCallStmtNode* node) {
 
 void SemanticAnalyzerVisitor::visit(MethodCallExprNode* node) {
     SymbolInfo info;
+    std::string callType = "unknown";
+
     if (symbolTable.resolveSymbol(node->methodName, info)) {
-        currentExprType = info.type;
-    } else {
-        if (node->methodName.find('.') == std::string::npos) {
-            reportError("Chamada a metodo nao declarado '" + node->methodName + "'.");
-        }
-        currentExprType = "unknown";
+        callType = info.type;
+    } else if (node->methodName.find('.') == std::string::npos) {
+        reportError("Chamada a metodo nao declarado '" + node->methodName + "'.");
     }
 
     for (const auto& arg : node->args) {
         if (arg) arg->accept(this);
     }
+
+    currentExprType = callType;
 }
 
 void SemanticAnalyzerVisitor::visit(LiteralNode* node) {
