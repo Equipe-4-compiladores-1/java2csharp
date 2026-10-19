@@ -5,13 +5,13 @@
 ![GNU](https://img.shields.io/badge/Flex_&_Bison-A42E2B?logo=gnu&logoColor=white)
 ![Linux](https://img.shields.io/badge/Linux-FCC624?logo=linux&logoColor=black)
 
-## >> ------ Visão geral ------ <<
+## Visão geral
 
 O **Java2CSharp** é um transpilador desenvolvido para a disciplina de **Compiladores 1**. Ele foca no subconjunto imperativo e procedural da linguagem **Java**, validando a estrutura do código e convertendo-o para uma representação equivalente em **C#**.
 
 O projeto utiliza um fluxo de compilação em etapas desacopladas, validando regras de escopo e gerando código C# através de uma classe estática wrapper.
 
-## >> ------ Capacidades ------ <<
+## Capacidades
 
 - **Análise Léxica:** Conversão do código fonte `.java` em fluxo de tokens utilizando Flex.
 - **Análise Sintática e AST:** Validação gramatical e construção da Árvore de Sintaxe Abstrata (AST) via Bison.
@@ -19,7 +19,7 @@ O projeto utiliza um fluxo de compilação em etapas desacopladas, validando reg
 - **Geração de Código (Visitor Pattern):** Emissão de código C# percorrendo a AST hierárquica (comandos, expressões e funções).
 - **Cobertura Automatizada:** Integração com `gcovr` para relatórios detalhados de cobertura de testes no terminal e em HTML.
 
-## >> ------ Módulos ------ <<
+## Módulos
 
 | Módulo | Responsabilidade | Guia |
 | --- | --- | --- |
@@ -29,7 +29,7 @@ O projeto utiliza um fluxo de compilação em etapas desacopladas, validando reg
 | **Testes** | Suíte de validação contendo arquivos imperativos de entrada e saídas esperadas. | `tests/` |
 | **Build** | Automação e orquestração da compilação de Flex, Bison e C++. | `CMakeLists.txt` |
 
-## >> ------ Comece aqui ------ <<
+## Comece aqui
 
 Pré-requisitos: **GCC / Clang** (C++17+), **Flex** (v2.6+), **Bison** (v3.0+) e **CMake** (v3.12+).
 
@@ -38,20 +38,21 @@ git clone https://github.com/Equipe-4-compiladores-1/java2csharp
 cd java2csharp
 
 # Crie o diretório de build e gere os arquivos de compilação
-mkdir build && cd build
-cmake ..
-make
+cmake -B build
+cmake --build build
 
 # Execute o transpilador passando o arquivo de entrada
-./java2csharp ../tests/input/exemplo.java -o saida.cs
+cd build/ && ./java2csharp ../tests/input/exemplo.java -o saida.cs
 
+# ou para digitar no terminal (CTRL + D para encerrar e compilar)
+cd build && ./java2charp
 ```
 
-## >> ------ Validação e métricas ------ <<
+## Validação e métricas
 
 A garantia de qualidade é feita através de uma suíte de testes de regressão e relatórios de cobertura do código-fonte gerados pelo `gcovr`.
 
-### >> ------ Executando os testes ------ <<
+### Executando os testes
 
 Após compilar o projeto na pasta `build`, execute a suíte de testes com:
 
@@ -60,7 +61,7 @@ make test
 
 ```
 
-### >> ------ Relatório de Cobertura ------ <<
+### Relatório de Cobertura
 
 Para medir o alcance do código testado, certifique-se de ter o `gcovr` instalado (`sudo pacman -S gcovr` no Arch Linux ou `sudo apt install gcovr` em distros Debian-based).
 
@@ -69,7 +70,7 @@ Na pasta `build`, escolha o formato do relatório:
 * **Terminal:** `make coverage`
 * **HTML:** `make coverage_html` (O relatório ficará disponível em `build/coverage_report/index.html`)
 
-## >> ------ Referências e contribuição ------ <<
+## Referências e contribuição
 
 1. Crie uma branch a partir de `main` (ex: `feature/nova-regra-semantica`).
 2. Adicione casos de teste na pasta `tests/input/` para validar a nova funcionalidade.
