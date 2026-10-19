@@ -138,6 +138,7 @@ void CSharpCodegenVisitor::visit(IfStmtNode* node) {
     } else {
         std::cout << "\n";
     }
+}
 
 void CSharpCodegenVisitor::visit(WhileStmtNode* node) {
     printIndent();
@@ -257,11 +258,9 @@ void CSharpCodegenVisitor::visit(MethodCallStmtNode* node) {
 // =========================================================================
 
 void CSharpCodegenVisitor::visit(BinaryExprNode* node) {
-    std::cout << "(";
     node->left->accept(this);
     std::cout << " " << node->op << " ";
     node->right->accept(this);
-    std::cout << ")";
 }
 
 void CSharpCodegenVisitor::visit(LiteralNode* node) {
@@ -288,4 +287,12 @@ void CSharpCodegenVisitor::visit(ParenthesizedExprNode* node) {
     std::cout << "(";
     if (node->expr) node->expr->accept(this);
     std::cout << ")";
+}
+
+void CSharpCodegenVisitor::visit(UnaryStmtNode* node) {
+    if (!inForHeader) printIndent(); 
+    
+    std::cout << node->identifier << node->op;
+    
+    if (!inForHeader) std::cout << ";\n"; 
 }

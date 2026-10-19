@@ -21,6 +21,8 @@ WHITESPACE  [ \t\r\n]+
 %%
 
 {WHITESPACE}        { /* Ignora espacos */ }
+"//".*              { /* Ignora comentarios de uma linha */ }
+"/*"([^*]|\*+[^*/])*\*+"/"  { /* Ignora comentarios de bloco (multilinha) */ }
 
 "class"             { return CLASS; }
 "public"            { return PUBLIC; }
@@ -51,6 +53,8 @@ WHITESPACE  [ \t\r\n]+
 ">="                { return GE; }
 "<"                 { return LT; }
 ">"                 { return GT; }
+"++"                { return INC; } 
+"--"                { return DEC; }
 "+"                 { return '+'; }
 "-"                 { return '-'; }
 "*"                 { return '*'; }
@@ -72,6 +76,8 @@ WHITESPACE  [ \t\r\n]+
 {CHAR_LIT}          { yylval.sval = strdup(yytext); return CHAR_LITERAL; }
 {IDENTIFIER}        { yylval.sval = strdup(yytext); return IDENTIFIER; }
 
-.                   { std::cerr << "Lexer Warning: Caractere ignorado: " << yytext << " na linha " << yylineno << std::endl; }
+.                   { return yytext[0]; }
+
+
 
 %%

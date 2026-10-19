@@ -21,6 +21,7 @@ class IfStmtNode;
 class AssignStmtNode;
 class WhileStmtNode;
 class ForStmtNode;
+class UnaryStmtNode;
 
 // Padrão Visitor para percorrer a AST
 class ASTVisitor {
@@ -42,6 +43,7 @@ public:
     virtual void visit(AssignStmtNode* node) = 0;
     virtual void visit(WhileStmtNode* node) = 0;
     virtual void visit(ForStmtNode* node) = 0;
+    virtual void visit(UnaryStmtNode* node) = 0;
 };
 
 // Classe Base
@@ -236,6 +238,19 @@ public:
     ClassDeclNode(std::string name) : className(std::move(name)) {}
 
     void accept(ASTVisitor* visitor) override { visitor->visit(this); }
+};
+
+class UnaryStmtNode : public StmtNode {
+public:
+    std::string identifier;
+    std::string op; // "++" ou "--"
+
+    UnaryStmtNode(std::string id, std::string operation)
+        : identifier(std::move(id)), op(std::move(operation)) {}
+
+    void accept(ASTVisitor* visitor) override {
+        visitor->visit(this);
+    }
 };
 
 #endif

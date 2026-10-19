@@ -30,11 +30,11 @@ std::shared_ptr<ClassDeclNode> rootNode;
 %token RETURN CLASS PUBLIC STATIC TYPE_STRING PRINT PRINTLN PRINTF
 %token IF ELSE TRUE FALSE
 %token WHILE FOR
-%token EQ NE LT LE GT GE
+%token EQ NE LT LE GT GE INC DEC
 
 %destructor { free($$); } <sval>
 
-%type <stmt> var_decl stmt
+%type <stmt> var_decl stmt unary_stmt
 %type <expr> expr
 %type <stmt_list> stmt_list
 %type <stmt_list> else_opt
@@ -158,7 +158,10 @@ stmt:
         $$ = new IfStmtNode(std::shared_ptr<ExprNode>($3), *$6, elseBody, hasElse);
         delete $6;
     }
+
     | assign_stmt ';' { $$ = $1; }
+    | unary_stmt ';' { $$ = $1; }
+    
     | WHILE '(' expr ')' '{' stmt_list '}' {
         $$ = new WhileStmtNode(std::shared_ptr<ExprNode>($3), *$6);
         delete $6;
@@ -199,13 +202,25 @@ for_cond:
     ;
 
 for_inc:
-    /* vazio */ { $$ = nullptr; }
+    /* vazio */ { $$ = nullptr; } 
     | assign_stmt { $$ = $1; }
+    | unary_stmt {$$ = $1; }     
     ;
 
 assign_stmt:
     IDENTIFIER '=' expr {
         $$ = new AssignStmtNode(std::string($1), std::shared_ptr<ExprNode>($3));
+        free($1);
+    }
+    ;
+
+unary_stmt:
+    IDENTIFIER INC {
+        $$ = new UnaryStmtNode(std::string($1), "++");
+        free($1);
+    }
+    | IDENTIFIER DEC {
+        $$ = new UnaryStmtNode(std::string($1), "--");
         free($1);
     }
     ;

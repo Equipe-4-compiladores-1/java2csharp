@@ -292,3 +292,15 @@ void SemanticAnalyzerVisitor::visit(ForStmtNode* node) {
 
     symbolTable.exitScope();
 }
+
+void SemanticAnalyzerVisitor::visit(UnaryStmtNode* node) {
+    SymbolInfo info;
+    if (!symbolTable.resolveSymbol(node->identifier, info)) {
+        reportError("Operacao '" + node->op + "' em variavel nao declarada '" + node->identifier + "'.");
+        return;
+    }
+
+    if (info.type == "boolean" || info.type == "bool" || info.type == "String") {
+        reportError("Operacao '" + node->op + "' invalida para a variavel '" + node->identifier + "' do tipo '" + info.type + "'.");
+    }
+}

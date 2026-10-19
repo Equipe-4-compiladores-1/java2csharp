@@ -35,6 +35,7 @@ public:
     void visit(AssignStmtNode* node) override;
     void visit(WhileStmtNode* node) override;
     void visit(ForStmtNode* node) override;
+    void visit(UnaryStmtNode* node) override;
 };
 
 #endif
