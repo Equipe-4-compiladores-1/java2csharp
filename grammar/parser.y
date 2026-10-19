@@ -135,6 +135,7 @@ stmt:
         
         // 4. Limpamos a lista temporária da memória
         delete $4;
+        free($3);
     }
     | IDENTIFIER '(' expr_list_opt ')' ';' {
         $$ = new MethodCallStmtNode($1, *$3);
@@ -161,7 +162,7 @@ stmt:
 
     | assign_stmt ';' { $$ = $1; }
     | unary_stmt ';' { $$ = $1; }
-    
+
     | WHILE '(' expr ')' '{' stmt_list '}' {
         $$ = new WhileStmtNode(std::shared_ptr<ExprNode>($3), *$6);
         delete $6;
