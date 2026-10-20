@@ -238,3 +238,69 @@ void SemanticAnalyzerVisitor::visit(IfStmtNode* node) {
         symbolTable.exitScope();
     }
 }
+
+void SemanticAnalyzerVisitor::visit(AssignStmtNode* node) {
+    SymbolInfo info;
+    if (!symbolTable.resolveSymbol(node->identifier, info)) {
+        reportError("Atribuicao a variavel nao declarada '" + node->identifier + "'.");
+        return;
+    }
+
+    if (node->expr) {
+        node->expr->accept(this);
+        std::string rightType = currentExprType;
+
+        if (rightType != "unknown" && !areTypesCompatible(info.type, rightType)) {
+            reportError("Atribuicao incompativel para a variavel '" + node->identifier +
+                        "'. Esperado: '" + info.type + "', Recebido: '" + rightType + "'.");
+        }
+    }
+}
+
+void SemanticAnalyzerVisitor::visit(WhileStmtNode* node) {
+    if (node->condition) {
+        node->condition->accept(this);
+        if (currentExprType != "unknown" && currentExprType != "boolean" && currentExprType != "bool") {
+            reportError("A condicao do 'while' deve ser do tipo boolean. Recebido: '" + currentExprType + "'.");
+        }
+    }
+
+    symbolTable.enterScope();
+    for (auto stmt : node->body) {
+        if (stmt) stmt->accept(this);
+    }
+    symbolTable.exitScope();
+}
+
+void SemanticAnalyzerVisitor::visit(ForStmtNode* node) {
+    symbolTable.enterScope();
+
+    if (node->init) node->init->accept(this);
+
+    if (node->condition) {
+        node->condition->accept(this);
+        if (currentExprType != "unknown" && currentExprType != "boolean" && currentExprType != "bool") {
+            reportError("A condicao do 'for' deve ser do tipo boolean. Recebido: '" + currentExprType + "'.");
+        }
+    }
+
+    if (node->increment) node->increment->accept(this);
+
+    for (auto stmt : node->body) {
+        if (stmt) stmt->accept(this);
+    }
+
+    symbolTable.exitScope();
+}
+
+void SemanticAnalyzerVisitor::visit(UnaryStmtNode* node) {
+    SymbolInfo info;
+    if (!symbolTable.resolveSymbol(node->identifier, info)) {
+        reportError("Operacao '" + node->op + "' em variavel nao declarada '" + node->identifier + "'.");
+        return;
+    }
+
+    if (info.type == "boolean" || info.type == "bool" || info.type == "String") {
+        reportError("Operacao '" + node->op + "' invalida para a variavel '" + node->identifier + "' do tipo '" + info.type + "'.");
+    }
+}

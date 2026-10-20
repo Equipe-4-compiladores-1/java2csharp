@@ -1,5 +1,10 @@
 #include "codegen.h"
 #include <sstream>
+#include <iostream>
+
+// =========================================================================
+// 1. ESTRUTURA DO PROGRAMA (Top-Level)
+// =========================================================================
 
 namespace {
 std::string toCSharpType(const std::string& javaType) {
@@ -15,77 +20,187 @@ void CSharpCodegenVisitor::generateProgram(const std::shared_ptr<ClassDeclNode>&
     std::cout << "using System;\n\n";
     std::cout << "namespace TranspiledProgram {\n";
 
-    // Chama o visitante para processar o nó da classe
+    indentLevel = 1; // Entramos no namespace, nível 1 para a classe
     root->accept(this);
 
-    std::cout << "}";
+    std::cout << "}\n";
 }
 
 void CSharpCodegenVisitor::visit(ClassDeclNode* node) {
-    // Usa o nome dinâmico da classe que veio do código Java
-    std::cout << "    public static class " << node->className << " {\n";
+    printIndent();
+    std::cout << "public static class " << node->className << " {\n";
 
-    // Visita cada função dentro da classe
+    indentLevel++; // Entramos na classe, nível 2 para as funções
     for (const auto& func : node->functions) {
         func->accept(this);
     }
+    indentLevel--;
 
-    std::cout << "    }\n";
+    printIndent();
+    std::cout << "}\n";
 }
 
+void CSharpCodegenVisitor::visit(FunctionDeclNode* node) {
+    printIndent();
+    
+    // Se o nome no Java for "main", mudamos para "Main" no C#. Senão, mantemos o original.
+    std::string methodName = (node->name == "main") ? "Main" : node->name;
+
+    std::cout << "public static " << node->returnType << " " << methodName << "(";
+    
+    // Tratamento especial para os parâmetros do main
+    if (node->name == "main") {
+        std::cout << "string[] args";
+    } else {
+        // Imprime a lista de parâmetros dinâmica
+        for (size_t i = 0; i < node->params.size(); ++i) {
+            std::cout << node->params[i].type << " " << node->params[i].name;
+            if (i < node->params.size() - 1) {
+                std::cout << ", ";
+            }
+        }
+    }
+    
+    std::cout << ") {\n";
+
+    indentLevel++; // Entramos na função, nível 3+ para os comandos
+    for (auto stmt : node->body) {
+        if (stmt) {
+            stmt->accept(this);
+        }
+    }
+    indentLevel--;
+
+    printIndent();
+    std::cout << "}\n\n";
+}
+
+// =========================================================================
+// 2. COMANDOS (Statements)
+// =========================================================================
 
 void CSharpCodegenVisitor::visit(VarDeclNode* node) {
-    std::cout << "            " << toCSharpType(node->type) << " " << node->name << " = ";
-    if (node->initExpr) {
-        node->initExpr->accept(this);
-    }
-    std::cout << ";\n";
+    if (!inForHeader) printIndent(); 
+    
+    std::string type = (node->type == "boolean") ? "bool" : node->type;
+    std::cout << type << " " << node->name << " = ";
+    
+    if (node->initExpr) node->initExpr->accept(this);
+    
+    if (!inForHeader) std::cout << ";\n";
+}
+
+void CSharpCodegenVisitor::visit(AssignStmtNode* node) {
+    if (!inForHeader) printIndent(); 
+    
+    std::cout << node->identifier << " = ";
+    if (node->expr) node->expr->accept(this);
+    
+    if (!inForHeader) std::cout << ";\n";
 }
 
 void CSharpCodegenVisitor::visit(ReturnStmtNode* node) {
-    std::cout << "            return ";
+    printIndent();
+    std::cout << "return ";
     if (node->expr) {
         node->expr->accept(this);
     }
     std::cout << ";\n";
 }
 
-void CSharpCodegenVisitor::visit(BinaryExprNode* node) {
-    node->left->accept(this);
-    std::cout << " " << node->op << " ";
-    node->right->accept(this);
-}
+void CSharpCodegenVisitor::visit(IfStmtNode* node) {
+    printIndent();
+    std::cout << "if (";
+    node->condition->accept(this);
+    std::cout << ") {\n";
 
-void CSharpCodegenVisitor::visit(ParenthesizedExprNode* node) {
-    std::cout << "(";
-    if (node->expr) node->expr->accept(this);
-    std::cout << ")";
-}
+    // Visita o bloco THEN com indentação aumentada
+    indentLevel++;
+    for (const auto& stmt : node->thenBody) {
+        if (stmt) stmt->accept(this);
+    }
+    indentLevel--;
 
-void CSharpCodegenVisitor::visit(LiteralNode* node) {
-    std::cout << node->value;
-}
-void CSharpCodegenVisitor::visit(PrintStmtNode* node) {
-    if (node->isNewLine) {
-        std::cout << "            Console.WriteLine(";
+    printIndent();
+    std::cout << "}";
+
+    // Visita o bloco ELSE, se existir
+    if (node->hasElse) {
+        std::cout << " else {\n";
+        indentLevel++;
+        for (const auto& stmt : node->elseBody) {
+            if (stmt) stmt->accept(this);
+        }
+        indentLevel--;
+        
+        printIndent();
+        std::cout << "}\n";
     } else {
-        std::cout << "            Console.Write(";
+        std::cout << "\n";
+    }
+}
+
+void CSharpCodegenVisitor::visit(WhileStmtNode* node) {
+    printIndent();
+    std::cout << "while (";
+    if (node->condition) node->condition->accept(this);
+    std::cout << ") {\n";
+
+    indentLevel++; 
+    for (auto stmt : node->body) {
+        if (stmt) stmt->accept(this);
+    }
+    indentLevel--; 
+
+    printIndent();
+    std::cout << "}\n";
+}
+
+void CSharpCodegenVisitor::visit(ForStmtNode* node) {
+    printIndent();
+    std::cout << "for (";
+    
+    inForHeader = true;
+    if (node->init) node->init->accept(this);
+    std::cout << "; ";
+    if (node->condition) node->condition->accept(this);
+    std::cout << "; ";
+    if (node->increment) node->increment->accept(this);
+    inForHeader = false;
+
+    std::cout << ") {\n";
+
+    indentLevel++; 
+    for (auto stmt : node->body) {
+        if (stmt) stmt->accept(this);
+    }
+    indentLevel--; 
+
+    printIndent();
+    std::cout << "}\n";
+}
+
+// =========================================================================
+// 3. ENTRADA E SAÍDA (I/O e Method Calls Stmts)
+// =========================================================================
+
+void CSharpCodegenVisitor::visit(PrintStmtNode* node) {
+    printIndent();
+    if (node->isNewLine) {
+        std::cout << "Console.WriteLine(";
+    } else {
+        std::cout << "Console.Write(";
     }
     
-    // Visita a expressão que está dentro dos parênteses
     if (node->expr) {
         node->expr->accept(this);
     }
-    
     std::cout << ");\n";
 }
 
-void CSharpCodegenVisitor::visit(StringNode* node) {
-    std::cout << node->value;
-}
-
 void CSharpCodegenVisitor::visit(PrintfStmtNode* node) {
-    std::cout << "            Console.Write(";
+    if (!inForHeader) printIndent();
+    std::cout << "Console.Write(";
     
     if (!node->args.empty()) {
         auto formatNode = std::dynamic_pointer_cast<StringNode>(node->args[0]);
@@ -95,18 +210,14 @@ void CSharpCodegenVisitor::visit(PrintfStmtNode* node) {
             size_t pos = 0;
             int argIndex = 0;
             
-            // Procura por QUALQUER '%' na string
             while ((pos = fmt.find("%", pos)) != std::string::npos) {
-                // Verifica se não é um "%%" (que serve para imprimir o próprio símbolo de porcentagem)
                 if (pos + 1 < fmt.length() && fmt[pos + 1] != '%') {
                     std::string replacement = "{" + std::to_string(argIndex) + "}";
-                    // Substitui 2 caracteres (o % e a letra seguinte, como 'f' ou 'd')
                     fmt.replace(pos, 2, replacement);
-                    
                     pos += replacement.length();
                     argIndex++;
                 } else {
-                    pos += 2; // Pula o "%%"
+                    pos += 2; 
                 }
             }
             std::cout << fmt;
@@ -119,60 +230,11 @@ void CSharpCodegenVisitor::visit(PrintfStmtNode* node) {
             node->args[i]->accept(this);
         }
     }
-    
     std::cout << ");\n";
 }
 
-void CSharpCodegenVisitor::visit(FunctionDeclNode* node) {
-    // Se o nome no Java for "main", mudamos para "Main" no C#. Senão, mantemos o original.
-    std::string methodName = (node->name == "main") ? "Main" : node->name;
-
-    // Escreve a assinatura usando a nossa nova variável 'methodName'
-    std::cout << "        public static " << toCSharpType(node->returnType) << " " << methodName << "(";
-    
-    // Tratamento especial para os parâmetros do main
-    if (node->name == "main") {
-        std::cout << "string[] args";
-    } else {
-        // Imprime a lista de parâmetros dinâmica
-        for (size_t i = 0; i < node->params.size(); ++i) {
-            std::cout << toCSharpType(node->params[i].type) << " " << node->params[i].name;
-            if (i < node->params.size() - 1) {
-                std::cout << ", ";
-            }
-        }
-    }
-    
-    std::cout << ") {\n";
-
-    // Visita o corpo da função
-    for (auto stmt : node->body) {
-        if (stmt) {
-            stmt->accept(this);
-        }
-    }
-
-    std::cout << "        }\n\n";
-}
-
-void CSharpCodegenVisitor::visit(MethodCallExprNode* node) {
-    // Atribui o nome do metodo e abre parênteses
-    std::cout << node->methodName << "(";   
-
-    // Itera sobre os args, visitando cada expr para gerar o codigo
-    for (size_t i = 0; i < node->args.size(); ++i) {
-        node->args[i]->accept(this);
-        if (i < node->args.size() - 1) {
-            std::cout << ", ";
-        }
-    }
-
-    // Fecha parênteses (sem ponto e virgula, pois é uma expr)
-    std::cout << ")";
-}
-
 void CSharpCodegenVisitor::visit(MethodCallStmtNode* node) {
-    std::cout << "            ";
+    if (!inForHeader) printIndent();
 
     std::string name = node->methodName;
     if (name == "System.out.println") name = "Console.WriteLine";
@@ -187,36 +249,50 @@ void CSharpCodegenVisitor::visit(MethodCallStmtNode* node) {
         }
     }
 
-    std::cout << ");\n";
+    if (!inForHeader) std::cout << ");\n";
+    else std::cout << ")";
 }
 
-void CSharpCodegenVisitor::visit(IfStmtNode* node) {
-    std::cout << "            if (";
-    node->condition->accept(this);
-    std::cout << ") {\n";
+// =========================================================================
+// 4. EXPRESSÕES (Expressões Inline - Sem Indentação Própria)
+// =========================================================================
 
-    auto generateBody = [this](const std::vector<std::shared_ptr<StmtNode>>& body) {
-        std::ostringstream bodyOutput;
-        std::streambuf* previousBuffer = std::cout.rdbuf(bodyOutput.rdbuf());
-        for (const auto& stmt : body) {
-            if (stmt) stmt->accept(this);
+void CSharpCodegenVisitor::visit(BinaryExprNode* node) {
+    node->left->accept(this);
+    std::cout << " " << node->op << " ";
+    node->right->accept(this);
+}
+
+void CSharpCodegenVisitor::visit(LiteralNode* node) {
+    std::cout << node->value;
+}
+
+void CSharpCodegenVisitor::visit(StringNode* node) {
+    std::cout << node->value;
+}
+
+void CSharpCodegenVisitor::visit(MethodCallExprNode* node) {
+    std::cout << node->methodName << "(";   
+
+    for (size_t i = 0; i < node->args.size(); ++i) {
+        node->args[i]->accept(this);
+        if (i < node->args.size() - 1) {
+            std::cout << ", ";
         }
-        std::cout.rdbuf(previousBuffer);
-
-        std::istringstream lines(bodyOutput.str());
-        std::string line;
-        while (std::getline(lines, line)) {
-            std::cout << "    " << line << "\n";
-        }
-    };
-
-    generateBody(node->thenBody);
-
-    std::cout << "            }";
-    if (node->hasElse) {
-        std::cout << " else {\n";
-        generateBody(node->elseBody);
-        std::cout << "            }";
     }
-    std::cout << "\n";
+    std::cout << ")";
+}
+
+void CSharpCodegenVisitor::visit(ParenthesizedExprNode* node) {
+    std::cout << "(";
+    if (node->expr) node->expr->accept(this);
+    std::cout << ")";
+}
+
+void CSharpCodegenVisitor::visit(UnaryStmtNode* node) {
+    if (!inForHeader) printIndent(); 
+    
+    std::cout << node->identifier << node->op;
+    
+    if (!inForHeader) std::cout << ";\n"; 
 }
