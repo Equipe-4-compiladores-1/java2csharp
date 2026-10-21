@@ -5,13 +5,13 @@ namespace TranspiledProgram {
         public static void Main(string[] args) {
             int a = 10;
             int b = 20;
-            if ((a < b)) {
-                int soma = (a + b);
-                int produto = (a * b);
+            if (a < b) {
+                int soma = a + b;
+                int produto = a * b;
                 Console.WriteLine(soma);
                 Console.WriteLine(produto);
             } else {
-                int diferenca = (a - b);
+                int diferenca = a - b;
                 Console.WriteLine(diferenca);
                 Console.WriteLine("a maior ou igual a b");
             }

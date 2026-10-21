@@ -5,7 +5,7 @@ namespace TranspiledProgram {
         public static void Main(string[] args) {
             Console.WriteLine("Iniciando programa...");
             inicializar();
-            int x = (calcular(10, 20) + 5);
+            int x = calcular(10, 20) + 5;
         }
 
         public static void inicializar() {
@@ -13,7 +13,7 @@ namespace TranspiledProgram {
         }
 
         public static int calcular(int a, int b) {
-            return (a * b);
+            return a * b;
         }
 
     }
