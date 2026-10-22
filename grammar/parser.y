@@ -29,11 +29,12 @@ std::shared_ptr<ClassDeclNode> rootNode;
 %token TYPE_BYTE TYPE_SHORT TYPE_INT TYPE_DOUBLE TYPE_FLOAT TYPE_CHAR TYPE_LONG TYPE_BOOL TYPE_VOID
 %token RETURN CLASS PUBLIC STATIC TYPE_STRING PRINT PRINTLN PRINTF
 %token IF ELSE TRUE FALSE
-%token EQ NE LT LE GT GE
+%token WHILE FOR
+%token EQ NE LT LE GT GE INC DEC
 
 %destructor { free($$); } <sval>
 
-%type <stmt> var_decl stmt
+%type <stmt> var_decl stmt unary_stmt
 %type <expr> expr
 %type <stmt_list> stmt_list
 %type <stmt_list> else_opt
@@ -41,6 +42,8 @@ std::shared_ptr<ClassDeclNode> rootNode;
 %type <expr_list> expr_list printf_args_opt expr_list_opt
 %type <param> param
 %type <param_list> param_list param_list_opt
+%type <stmt> for_init for_inc assign_stmt
+%type <expr> for_cond
 
 %left EQ NE LT LE GT GE
 %left '+' '-'
@@ -132,6 +135,7 @@ stmt:
         
         // 4. Limpamos a lista temporária da memória
         delete $4;
+        free($3);
     }
     | IDENTIFIER '(' expr_list_opt ')' ';' {
         $$ = new MethodCallStmtNode($1, *$3);
@@ -155,6 +159,23 @@ stmt:
         $$ = new IfStmtNode(std::shared_ptr<ExprNode>($3), *$6, elseBody, hasElse);
         delete $6;
     }
+
+    | assign_stmt ';' { $$ = $1; }
+    | unary_stmt ';' { $$ = $1; }
+
+    | WHILE '(' expr ')' '{' stmt_list '}' {
+        $$ = new WhileStmtNode(std::shared_ptr<ExprNode>($3), *$6);
+        delete $6;
+    }
+    | FOR '(' for_init ';' for_cond ';' for_inc ')' '{' stmt_list '}' {
+        $$ = new ForStmtNode(
+            std::shared_ptr<StmtNode>($3),
+            std::shared_ptr<ExprNode>($5),
+            std::shared_ptr<StmtNode>($7),
+            *$10
+        );
+        delete $10;
+    }
     ;
 
 else_opt:
@@ -170,7 +191,40 @@ var_decl:
     }
     ;
 
+for_init:
+    /* vazio */ { $$ = nullptr; }
+    | var_decl { $$ = $1; }
+    | assign_stmt { $$ = $1; }
+    ;
 
+for_cond:
+    /* vazio */ { $$ = nullptr; }
+    | expr { $$ = $1; }
+    ;
+
+for_inc:
+    /* vazio */ { $$ = nullptr; } 
+    | assign_stmt { $$ = $1; }
+    | unary_stmt {$$ = $1; }     
+    ;
+
+assign_stmt:
+    IDENTIFIER '=' expr {
+        $$ = new AssignStmtNode(std::string($1), std::shared_ptr<ExprNode>($3));
+        free($1);
+    }
+    ;
+
+unary_stmt:
+    IDENTIFIER INC {
+        $$ = new UnaryStmtNode(std::string($1), "++");
+        free($1);
+    }
+    | IDENTIFIER DEC {
+        $$ = new UnaryStmtNode(std::string($1), "--");
+        free($1);
+    }
+    ;
 
 expr:
     '(' expr ')' { $$ = new ParenthesizedExprNode(std::shared_ptr<ExprNode>($2)); }

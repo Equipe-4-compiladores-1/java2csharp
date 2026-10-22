@@ -1,5 +1,4 @@
 #ifndef CODEGEN_H
-#ifndef CODEGEN_H
 #define CODEGEN_H
 
 #include "ast.h"
@@ -8,6 +7,16 @@
 #include <memory>
 
 class CSharpCodegenVisitor : public ASTVisitor {
+private:
+    bool inForHeader = false;
+
+    int indentLevel = 0;
+    void printIndent() {
+        for (int i = 0; i < indentLevel; ++i) {
+            std::cout << "    "; 
+        }
+    }
+
 public:
     void generateProgram(const std::shared_ptr<ClassDeclNode>& root);
     void visit(ClassDeclNode* node) override;
@@ -23,7 +32,10 @@ public:
     void visit(MethodCallExprNode* node) override;
     void visit(MethodCallStmtNode* node) override;
     void visit(IfStmtNode* node) override;
+    void visit(AssignStmtNode* node) override;
+    void visit(WhileStmtNode* node) override;
+    void visit(ForStmtNode* node) override;
+    void visit(UnaryStmtNode* node) override;
 };
 
-#endif
 #endif

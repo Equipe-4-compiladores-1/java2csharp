@@ -5,8 +5,8 @@ namespace TranspiledProgram {
         public static void Main(string[] args) {
         }
 
-        public static sbyte identidadeByte(sbyte valor) {
-            sbyte copia = valor;
+        public static byte identidadeByte(byte valor) {
+            byte copia = valor;
             return copia;
         }
 
@@ -15,7 +15,7 @@ namespace TranspiledProgram {
             return copia;
         }
 
-        public static short ampliarByte(sbyte valor) {
+        public static short ampliarByte(byte valor) {
             return valor;
         }
 
@@ -23,7 +23,7 @@ namespace TranspiledProgram {
             return valor;
         }
 
-        public static int somar(sbyte a, short b) {
+        public static int somar(byte a, short b) {
             return a + b;
         }
 

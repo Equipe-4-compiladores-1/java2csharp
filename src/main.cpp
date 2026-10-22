@@ -14,13 +14,14 @@ extern std::vector<std::shared_ptr<FunctionDeclNode>> programFunctions;
 extern std::shared_ptr<ClassDeclNode> rootNode;
 
 int main(int argc, char** argv) {
+    FILE* inputFile = nullptr;
     if (argc > 1) {
-        FILE* file = fopen(argv[1], "r");
-        if (!file) {
+        inputFile = fopen(argv[1], "r");
+        if (!inputFile) {
             std::cerr << "Erro ao abrir o arquivo: " << argv[1] << std::endl;
             return 1;
         }
-        yyin = file;
+        yyin = inputFile;
     } else {
         std::cout << "Lendo da entrada padrao (Ctrl+D para encerrar)..." << std::endl;
     }
@@ -66,6 +67,14 @@ int main(int argc, char** argv) {
     } else {
         std::cerr << "Falha na compilacao." << std::endl;
         return 1;
+    }
+
+    // --- Limpeza de recursos e encerramento ---
+    extern int yylex_destroy();
+    yylex_destroy();
+    
+    if (inputFile && inputFile != stdin) {
+        fclose(inputFile);
     }
 
     return 0;
