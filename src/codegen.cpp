@@ -46,7 +46,8 @@ void CSharpCodegenVisitor::visit(FunctionDeclNode* node) {
     // Se o nome no Java for "main", mudamos para "Main" no C#. Senão, mantemos o original.
     std::string methodName = (node->name == "main") ? "Main" : node->name;
 
-    std::cout << "public static " << node->returnType << " " << methodName << "(";
+    std::string returnType = (node->returnType == "boolean") ? "bool" : node->returnType;
+    std::cout << "public static " << returnType << " " << methodName << "(";
     
     // Tratamento especial para os parâmetros do main
     if (node->name == "main") {
