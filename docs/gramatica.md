@@ -42,7 +42,22 @@ Funções nativas de impressão são mapeadas para os métodos da classe `Consol
 
 ### 5. Operações Matemáticas
 
-Reconhecimento de operações binárias respeitando a precedência padrão (`*`, `/` avaliados antes de `+`, `-`).
+Reconhecimento de operações binárias respeitando a precedência padrão (`*`, `/` avaliados antes de `+`, `-`). Os operadores de atualização numérica aceitam incremento e decremento prefixados ou pós-fixados e atribuição composta, tanto como comandos quanto em expressões:
+
+```java
+valor++;
+--valor;
+valor += 2;
+valor -= 1;
+valor *= 3;
+valor /= 2;
+valor %= 5;
+int anterior = valor++;
+int atual = ++valor;
+int soma = (valor += 2);
+```
+
+Os alvos devem ser variáveis numéricas declaradas, e os valores das atribuições compostas também devem ser numéricos.
 
 ## :material-alert-circle-outline: Limitações Conhecidas
 

@@ -254,6 +254,28 @@ void CSharpCodegenVisitor::visit(MethodCallStmtNode* node) {
     else std::cout << ")";
 }
 
+void CSharpCodegenVisitor::visit(NumericUpdateExprNode* node) {
+    const bool isIncrementOrDecrement = node->op == "++" || node->op == "--";
+    if (isIncrementOrDecrement && node->isPrefix) {
+        std::cout << node->op;
+    }
+    std::cout << node->variable;
+    if (isIncrementOrDecrement) {
+        if (!node->isPrefix) std::cout << node->op;
+    } else {
+        std::cout << " " << node->op << " ";
+        if (node->expr) node->expr->accept(this);
+    }
+}
+
+void CSharpCodegenVisitor::visit(ExprStmtNode* node) {
+    if (!inForHeader) printIndent();
+    if (node->expr) {
+        node->expr->accept(this);
+    }
+    if (!inForHeader) std::cout << ";\n";
+}
+
 // =========================================================================
 // 4. EXPRESSÕES (Expressões Inline - Sem Indentação Própria)
 // =========================================================================

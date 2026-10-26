@@ -31,11 +31,12 @@ std::shared_ptr<ClassDeclNode> rootNode;
 %token IF ELSE TRUE FALSE
 %token WHILE FOR
 %token EQ NE LT LE GT GE INC DEC
+%token ADD_ASSIGN SUB_ASSIGN MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN
 
 %destructor { free($$); } <sval>
 
-%type <stmt> var_decl stmt unary_stmt
-%type <expr> expr
+%type <stmt> var_decl stmt
+%type <expr> expr numeric_update
 %type <stmt_list> stmt_list
 %type <stmt_list> else_opt
 %type <sval> type_specifier
@@ -45,6 +46,7 @@ std::shared_ptr<ClassDeclNode> rootNode;
 %type <stmt> for_init for_inc assign_stmt
 %type <expr> for_cond
 
+%right UPDATE_ASSIGN
 %left EQ NE LT LE GT GE
 %left '+' '-'
 %left '*' '/'
@@ -149,6 +151,7 @@ stmt:
         free($1);
         free($3);
     }
+    | numeric_update ';' { $$ = new ExprStmtNode(std::shared_ptr<ExprNode>($1)); }
     | IF '(' expr ')' '{' stmt_list '}' else_opt {
         std::vector<std::shared_ptr<StmtNode>> elseBody;
         bool hasElse = $8 != nullptr;
@@ -161,8 +164,6 @@ stmt:
     }
 
     | assign_stmt ';' { $$ = $1; }
-    | unary_stmt ';' { $$ = $1; }
-
     | WHILE '(' expr ')' '{' stmt_list '}' {
         $$ = new WhileStmtNode(std::shared_ptr<ExprNode>($3), *$6);
         delete $6;
@@ -205,23 +206,12 @@ for_cond:
 for_inc:
     /* vazio */ { $$ = nullptr; } 
     | assign_stmt { $$ = $1; }
-    | unary_stmt {$$ = $1; }     
+    | numeric_update { $$ = new ExprStmtNode(std::shared_ptr<ExprNode>($1)); }
     ;
 
 assign_stmt:
     IDENTIFIER '=' expr {
         $$ = new AssignStmtNode(std::string($1), std::shared_ptr<ExprNode>($3));
-        free($1);
-    }
-    ;
-
-unary_stmt:
-    IDENTIFIER INC {
-        $$ = new UnaryStmtNode(std::string($1), "++");
-        free($1);
-    }
-    | IDENTIFIER DEC {
-        $$ = new UnaryStmtNode(std::string($1), "--");
         free($1);
     }
     ;
@@ -250,6 +240,7 @@ expr:
         free($1);
         free($3);
     }
+    | numeric_update { $$ = $1; }
     | expr '+' expr { $$ = new BinaryExprNode("+", std::shared_ptr<ExprNode>($1), std::shared_ptr<ExprNode>($3)); }
     | expr '-' expr { $$ = new BinaryExprNode("-", std::shared_ptr<ExprNode>($1), std::shared_ptr<ExprNode>($3)); }
     | expr '*' expr { $$ = new BinaryExprNode("*", std::shared_ptr<ExprNode>($1), std::shared_ptr<ExprNode>($3)); }
@@ -260,6 +251,45 @@ expr:
     | expr LE expr { $$ = new BinaryExprNode("<=", std::shared_ptr<ExprNode>($1), std::shared_ptr<ExprNode>($3)); }
     | expr GT expr { $$ = new BinaryExprNode(">", std::shared_ptr<ExprNode>($1), std::shared_ptr<ExprNode>($3)); }
     | expr GE expr { $$ = new BinaryExprNode(">=", std::shared_ptr<ExprNode>($1), std::shared_ptr<ExprNode>($3)); }
+    ;
+
+numeric_update:
+    IDENTIFIER INC {
+        $$ = new NumericUpdateExprNode($1, "++", nullptr, false);
+        free($1);
+    }
+    | INC IDENTIFIER {
+        $$ = new NumericUpdateExprNode($2, "++", nullptr, true);
+        free($2);
+    }
+    | IDENTIFIER DEC {
+        $$ = new NumericUpdateExprNode($1, "--", nullptr, false);
+        free($1);
+    }
+    | DEC IDENTIFIER {
+        $$ = new NumericUpdateExprNode($2, "--", nullptr, true);
+        free($2);
+    }
+    | IDENTIFIER ADD_ASSIGN expr {
+        $$ = new NumericUpdateExprNode($1, "+=", std::shared_ptr<ExprNode>($3));
+        free($1);
+    } %prec UPDATE_ASSIGN
+    | IDENTIFIER SUB_ASSIGN expr {
+        $$ = new NumericUpdateExprNode($1, "-=", std::shared_ptr<ExprNode>($3));
+        free($1);
+    } %prec UPDATE_ASSIGN
+    | IDENTIFIER MUL_ASSIGN expr {
+        $$ = new NumericUpdateExprNode($1, "*=", std::shared_ptr<ExprNode>($3));
+        free($1);
+    } %prec UPDATE_ASSIGN
+    | IDENTIFIER DIV_ASSIGN expr {
+        $$ = new NumericUpdateExprNode($1, "/=", std::shared_ptr<ExprNode>($3));
+        free($1);
+    } %prec UPDATE_ASSIGN
+    | IDENTIFIER MOD_ASSIGN expr {
+        $$ = new NumericUpdateExprNode($1, "%=", std::shared_ptr<ExprNode>($3));
+        free($1);
+    } %prec UPDATE_ASSIGN
     ;
 
 expr_list:
