@@ -64,7 +64,30 @@ Para rodar o transpilador, basta passar o arquivo `.java` de origem como argumen
 ./java2csharp ../tests/input/MeuPrograma.java
 ```
 
+Também é possível digitar o código diretamente no terminal executando o transpilador sem argumentos (pressione `Ctrl + D` para encerrar a entrada e compilar):
+
+```bash
+./java2csharp
+```
+
 **Resultado Esperado:**
-O programa fará a leitura, exibirá a árvore ou o código gerado no terminal e criará o arquivo de saída `Saida.cs` contendo o código transpilado. Caso haja algum erro léxico ou sintático, a execução será interrompida e o erro será apontado.
+O programa fará a leitura, exibirá o código gerado no terminal e criará o arquivo de saída `Saida.cs` contendo o código transpilado. Caso haja algum erro léxico, sintático ou semântico, a execução será interrompida, o erro será apontado e o arquivo não será gerado.
+
+!!! note "Arquivo de saída"
+    O nome do arquivo de saída é fixo: o código é sempre gravado em `Saida.cs`, no diretório de onde o executável foi chamado (sobrescrevendo um arquivo anterior com o mesmo nome). O executável não aceita a flag `-o` — basta informar o arquivo `.java` de entrada.
 
 Erros sintáticos informam a linha, o termo exato que não pôde ser compilado e os tokens esperados pelo parser.
+
+```text
+[Erro Sintatico] na linha 3: termo '+' nao pode ser compilado: syntax error, unexpected '+'
+```
+
+Erros semânticos são descritos na página [Análise Semântica](analise-semantica.md).
+
+## :material-test-tube: Executando os Testes
+
+Após compilar, execute a suíte de testes de regressão a partir do diretório `build`:
+
+```bash
+make test
+```
