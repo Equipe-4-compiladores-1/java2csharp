@@ -1,6 +1,13 @@
 #include "semantic_analyzer.h"
 #include <cctype>
 
+namespace {
+bool isNumericType(const std::string& type) {
+    return type == "byte" || type == "short" || type == "int" || type == "long" ||
+           type == "float" || type == "double" || type == "char";
+}
+}
+
 void SemanticAnalyzerVisitor::reportError(const std::string& message) {
     std::cerr << "[Erro Semantico] " << message << std::endl;
     hasSemanticError = true;
@@ -146,6 +153,35 @@ void SemanticAnalyzerVisitor::visit(MethodCallStmtNode* node) {
     for (const auto& arg : node->args) {
         if (arg) arg->accept(this);
     }
+}
+
+void SemanticAnalyzerVisitor::visit(NumericUpdateExprNode* node) {
+    SymbolInfo info;
+    if (!symbolTable.resolveSymbol(node->variable, info)) {
+        reportError("Variavel '" + node->variable + "' nao declarada.");
+        if (node->expr) node->expr->accept(this);
+        currentExprType = "unknown";
+        return;
+    }
+
+    if (info.kind == SymbolKind::FUNCTION) {
+        reportError("O alvo do operador '" + node->op + "' deve ser uma variavel.");
+    } else if (!isNumericType(info.type)) {
+        reportError("O operador '" + node->op + "' exige uma variavel numerica. Recebido: '" + info.type + "'.");
+    }
+
+    currentExprType = info.kind == SymbolKind::FUNCTION ? "unknown" : info.type;
+    if (node->expr) {
+        node->expr->accept(this);
+        if (currentExprType != "unknown" && !isNumericType(currentExprType)) {
+            reportError("O operador '" + node->op + "' exige um valor numerico. Recebido: '" + currentExprType + "'.");
+        }
+        currentExprType = info.kind == SymbolKind::FUNCTION ? "unknown" : info.type;
+    }
+}
+
+void SemanticAnalyzerVisitor::visit(ExprStmtNode* node) {
+    if (node->expr) node->expr->accept(this);
 }
 
 void SemanticAnalyzerVisitor::visit(MethodCallExprNode* node) {

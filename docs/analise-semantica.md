@@ -33,6 +33,7 @@ Em expressões aritméticas, `byte` e `short` são promovidos a `int`, como em J
 * **Operadores Aritméticos (`+`, `-`, `*`, `/`)**: Requerem operandos numéricos compatíveis. A operação promove o tipo do resultado para o maior tipo envolvido.
 * **Concatenação de Strings (`+`)**: Se qualquer um dos operandos for do tipo `String`, o resultado da operação binária será `String`.
 * **Condição de `if`**: A expressão condicional deve obrigatoriamente retornar o tipo `boolean`.
+* **Atualização numérica (`++`, `--`, `+=`, `-=`, `*=`, `/=`, `%=`)**: O alvo deve ser uma variável numérica declarada; atribuições compostas também exigem um operando numérico.
 
 ---
 
