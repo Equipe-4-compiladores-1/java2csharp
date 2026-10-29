@@ -215,6 +215,22 @@ São aceitos na forma **pós-fixa** como comando isolado (`contador++;`) ou na p
 | `x /= y` | `x = x / y` | :material-clock-outline: Planejado |
 
 Os operadores de atribuição composta ainda **não** são reconhecidos pelo lexer/parser. Até sua implementação, utilize a forma expandida (`x = x + y`).
+Reconhecimento de operações binárias respeitando a precedência padrão (`*`, `/` avaliados antes de `+`, `-`). Os operadores de atualização numérica aceitam incremento e decremento prefixados ou pós-fixados e atribuição composta, tanto como comandos quanto em expressões:
+
+```java
+valor++;
+--valor;
+valor += 2;
+valor -= 1;
+valor *= 3;
+valor /= 2;
+valor %= 5;
+int anterior = valor++;
+int atual = ++valor;
+int soma = (valor += 2);
+```
+
+Os alvos devem ser variáveis numéricas declaradas, e os valores das atribuições compostas também devem ser numéricos.
 
 ## :material-alert-circle-outline: Limitações Conhecidas
 

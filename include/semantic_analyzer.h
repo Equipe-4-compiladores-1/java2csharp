@@ -41,6 +41,8 @@ public:
     void visit(WhileStmtNode* node) override;
     void visit(ForStmtNode* node) override;
     void visit(UnaryStmtNode* node) override;
+    void visit(NumericUpdateExprNode* node) override;
+    void visit(ExprStmtNode* node) override;
 };
 
 #endif

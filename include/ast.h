@@ -22,6 +22,8 @@ class AssignStmtNode;
 class WhileStmtNode;
 class ForStmtNode;
 class UnaryStmtNode;
+class NumericUpdateExprNode;
+class ExprStmtNode;
 
 // Padrão Visitor para percorrer a AST
 class ASTVisitor {
@@ -44,6 +46,8 @@ public:
     virtual void visit(WhileStmtNode* node) = 0;
     virtual void visit(ForStmtNode* node) = 0;
     virtual void visit(UnaryStmtNode* node) = 0;
+    virtual void visit(NumericUpdateExprNode* node) = 0;
+    virtual void visit(ExprStmtNode* node) = 0;
 };
 
 // Classe Base
@@ -100,8 +104,35 @@ public:
     void accept(ASTVisitor* visitor) override { visitor->visit(this); }
 };
 
+class NumericUpdateExprNode : public ExprNode {
+public:
+    std::string variable;
+    std::string op;
+    std::shared_ptr<ExprNode> expr;
+    bool isPrefix;
+
+    NumericUpdateExprNode(std::string variable, std::string op,
+                          std::shared_ptr<ExprNode> expr = nullptr, bool isPrefix = false)
+        : variable(std::move(variable)), op(std::move(op)), expr(std::move(expr)), isPrefix(isPrefix) {}
+
+    void accept(ASTVisitor* visitor) override {
+        visitor->visit(this);
+    }
+};
+
 // --- COMANDOS (STATEMENTS) ---
 class StmtNode : public ASTNode {};
+
+class ExprStmtNode : public StmtNode {
+public:
+    std::shared_ptr<ExprNode> expr;
+
+    explicit ExprStmtNode(std::shared_ptr<ExprNode> expr) : expr(std::move(expr)) {}
+
+    void accept(ASTVisitor* visitor) override {
+        visitor->visit(this);
+    }
+};
 
 class IfStmtNode : public StmtNode {
 public:
