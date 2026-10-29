@@ -15,7 +15,9 @@ O projeto utiliza um fluxo de compilação em etapas desacopladas, validando reg
 
 - **Análise Léxica:** Conversão do código fonte `.java` em fluxo de tokens utilizando Flex.
 - **Análise Sintática e AST:** Validação gramatical e construção da Árvore de Sintaxe Abstrata (AST) via Bison.
-- **Análise Semântica:** Uso de Tabela de Símbolos para validar existência de variáveis, escopos aninhados, redefinições e conflitos de parâmetros.
+- **Análise Semântica:** Uso de Tabela de Símbolos para validar existência de variáveis, escopos de bloco aninhados, redefinições, conflitos de parâmetros e compatibilidade de tipos (atribuições, retornos, operações e condições).
+- **Estruturas de Controle:** Desvios condicionais (`if/else`) e laços de repetição (`while` e `for`).
+- **Operadores:** Aritméticos (`+`, `-`, `*`, `/`), relacionais (`==`, `!=`, `<`, `<=`, `>`, `>=`) e incremento/decremento pós-fixo (`++`, `--`).
 - **Geração de Código (Visitor Pattern):** Emissão de código C# percorrendo a AST hierárquica (comandos, expressões e funções).
 - **Cobertura Automatizada:** Integração com `gcovr` para relatórios detalhados de cobertura de testes no terminal e em HTML.
 
@@ -42,11 +44,13 @@ cmake -B build
 cmake --build build
 
 # Execute o transpilador passando o arquivo de entrada
-cd build/ && ./java2csharp ../tests/input/exemplo.java -o saida.cs
+cd build/ && ./java2csharp ../tests/input/success/IfElse_01.java
 
 # ou para digitar no terminal (CTRL + D para encerrar e compilar)
-cd build && ./java2charp
+cd build/ && ./java2csharp
 ```
+
+O código C# gerado é exibido no terminal e gravado automaticamente no arquivo `Saida.cs`, criado no diretório de onde o executável foi chamado (não há opção para escolher outro nome de saída).
 
 ## Validação e métricas
 
