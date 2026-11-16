@@ -23,7 +23,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.1">
     
     
       
@@ -31,10 +31,10 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.57a0d79d.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.fb2fffe2.min.css">
       
       
 
@@ -655,22 +655,24 @@
 <h1 id="arquitetura-do-projeto">Arquitetura do Projeto</h1>
 <p>O <strong>Java2CSharp</strong> segue a arquitetura clássica de compiladores de back-end, processando o código-fonte em etapas sequenciais muito bem definidas. O foco é manter o desacoplamento absoluto entre as regras gramaticais e a geração do código C#.</p>
 <h2 id="pipeline-de-compilacao"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12 16 7.36-5.73L21 9l-9-7-9 7 1.63 1.27M12 18.54l-7.38-5.73L3 14.07l9 7 9-7-1.63-1.27z"/></svg></span> Pipeline de Compilação</h2>
-<p>O fluxo de dados desde a leitura do arquivo <code>.java</code> até a geração do <code>.cs</code> ocorre em quatro fases principais:</p>
+<p>O fluxo de dados desde a leitura do arquivo <code>.java</code> até a geração do <code>.cs</code> ocorre em cinco fases principais:</p>
 <ol>
 <li><strong>Análise Léxica (Lex / Flex):</strong> Lê a string de texto puro do arquivo fonte e agrupa os caracteres em unidades de significado chamadas de <em>Tokens</em> (ex: <code>IDENTIFIER</code>, <code>INT_LITERAL</code>, <code>TYPE_INT</code>).</li>
 <li><strong>Análise Sintática (Yacc / Bison):</strong> Consome os tokens gerados pelo Lexer e valida se a sequência forma sentenças válidas segundo as regras da gramática do nosso subconjunto Java.</li>
 <li><strong>Construção da AST:</strong> Durante a validação sintática, o Bison instancia nós C++ em memória (<code>ExprNode</code>, <code>StmtNode</code>, <code>ClassDeclNode</code>), formando a Árvore Sintática Abstrata (AST) que representa o programa.</li>
+<li><strong>Análise Semântica:</strong> O <code>SemanticAnalyzerVisitor</code> percorre a AST usando a Tabela de Símbolos para validar escopos e tipos. Se algum erro for encontrado, a compilação é interrompida antes da geração de código.</li>
 <li><strong>Geração de Código (Visitor Pattern):</strong> A árvore é percorrida por um <code>CSharpCodegenVisitor</code>. Cada nó visitado emite sua própria string C# formatada, compondo o arquivo final.</li>
 </ol>
 <h2 id="arvore-sintatica-abstrata-ast"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 3h6v4H3zm12 7h6v4h-6zm0 7h6v4h-6zm-2-4H7v5h6v2H5V9h2v2h6z"/></svg></span> Árvore Sintática Abstrata (AST)</h2>
 <p>A AST é o coração do transpilador. Em vez de emitir código C# imediatamente assim que uma regra é reconhecida no Bison, criamos nós hierárquicos em C++17. </p>
 <p>Nós principais implementados em <code>ast.h</code>:
-* <strong>Declarações:</strong> <code>FunctionDeclNode</code>, <code>VarDeclNode</code>.
-* <strong>Comandos (Statements):</strong> <code>PrintStmtNode</code>, <code>ReturnStmtNode</code>, <code>MethodCallStmtNode</code>.
-* <strong>Expressões (Expressions):</strong> <code>BinaryExprNode</code>, <code>LiteralNode</code>, <code>MethodCallExprNode</code>.</p>
+* <strong>Declarações:</strong> <code>ClassDeclNode</code>, <code>FunctionDeclNode</code>, <code>VarDeclNode</code>.
+* <strong>Comandos (Statements):</strong> <code>PrintStmtNode</code>, <code>PrintfStmtNode</code>, <code>ReturnStmtNode</code>, <code>MethodCallStmtNode</code>, <code>AssignStmtNode</code>, <code>UnaryStmtNode</code>.
+* <strong>Controle de Fluxo:</strong> <code>IfStmtNode</code>, <code>WhileStmtNode</code>, <code>ForStmtNode</code>.
+* <strong>Expressões (Expressions):</strong> <code>BinaryExprNode</code>, <code>ParenthesizedExprNode</code>, <code>LiteralNode</code>, <code>StringNode</code>, <code>MethodCallExprNode</code>.</p>
 <div class="admonition info">
 <p class="admonition-title">Por que usar o Padrão Visitor?</p>
-<p>O padrão Visitor (<code>ASTVisitor</code>) permite que adicionemos novas funcionalidades (como um avaliador semântico) sem precisar alterar as classes da nossa AST. Toda a lógica de tradução para C# fica isolada no arquivo <code>codegen.cpp</code>.</p>
+<p>O padrão Visitor (<code>ASTVisitor</code>) permite que adicionemos novas funcionalidades (como um avaliador semântico) sem precisar alterar as classes da nossa AST. Toda a lógica de tradução para C# fica isolada no arquivo <code>codegen.cpp</code>, e a validação semântica em <code>semantic_analyzer.cpp</code>.</p>
 </div>
 <hr />
 
@@ -730,10 +732,10 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate", "content.tabs.link"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copiado para \u00e1rea de transfer\u00eancia", "clipboard.copy": "Copiar para \u00e1rea de transfer\u00eancia", "search.result.more.one": "Mais 1 nesta p\u00e1gina", "search.result.more.other": "Mais # nesta p\u00e1gina", "search.result.none": "Nenhum resultado encontrado", "search.result.one": "1 resultado encontrado", "search.result.other": "# resultados encontrados", "search.result.placeholder": "Digite para iniciar a busca", "search.result.term.missing": "Ausente", "select.version": "Selecione a vers\u00e3o"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate", "content.tabs.link"], "search": "../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copiado para \u00e1rea de transfer\u00eancia", "clipboard.copy": "Copiar para \u00e1rea de transfer\u00eancia", "search.result.more.one": "Mais 1 nesta p\u00e1gina", "search.result.more.other": "Mais # nesta p\u00e1gina", "search.result.none": "Nenhum resultado encontrado", "search.result.one": "1 resultado encontrado", "search.result.other": "# resultados encontrados", "search.result.placeholder": "Digite para iniciar a busca", "search.result.term.missing": "Ausente", "select.version": "Selecione a vers\u00e3o"}, "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../assets/javascripts/bundle.a5f9d56c.min.js"></script>
       
     
   </body>

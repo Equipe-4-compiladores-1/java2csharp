@@ -23,7 +23,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.1">
     
     
       
@@ -31,10 +31,10 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.57a0d79d.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.fb2fffe2.min.css">
       
       
 
@@ -737,12 +737,12 @@
 <h3 id="1-tabela-de-simbolos-e-escopos">1. Tabela de Símbolos e Escopos</h3>
 <ul>
 <li><strong>Tabela de Símbolos (<code>SymbolTable</code>)</strong>: Mapeia identificadores para suas informações (<code>SymbolInfo</code>: tipo, categoria, inicialização e linha).</li>
-<li><strong>Escopos Aninhados</strong>: Gerenciados via pilha de mapas (<code>scopes</code>). Novos escopos são empilhados na entrada de métodos (<code>FunctionDeclNode</code>) e blocos condicionais (<code>IfStmtNode</code>) e desempilhados na saída.</li>
+<li><strong>Escopos Aninhados</strong>: Gerenciados via pilha de mapas (<code>scopes</code>). Novos escopos são empilhados na entrada de métodos (<code>FunctionDeclNode</code>), blocos condicionais (<code>IfStmtNode</code>, um escopo para o <code>then</code> e outro para o <code>else</code>) e laços (<code>WhileStmtNode</code>, <code>ForStmtNode</code>) e desempilhados na saída. No <code>for</code>, a variável declarada na inicialização pertence ao escopo do laço.</li>
 <li><strong>Redefinição de Símbolos</strong>: Variáveis ou parâmetros com o mesmo nome no mesmo escopo resultam em erro semântico imediato.</li>
 </ul>
 <h3 id="2-compatibilidade-e-promocao-de-tipos-widening-conversions">2. Compatibilidade e Promoção de Tipos (<em>Widening Conversions</em>)</h3>
 <p>A atribuição ou retorno de valores permite conversões implícitas de alargamento de tipo conforme a hierarquia abaixo:</p>
-<p>$$\text{int} \longrightarrow \text{long} \longrightarrow \text{float} \longrightarrow \text{double}$$</p>
+<p>$$\text{byte} \longrightarrow \text{short} \longrightarrow \text{int} \longrightarrow \text{long} \longrightarrow \text{float} \longrightarrow \text{double}$$</p>
 <table>
 <thead>
 <tr>
@@ -752,20 +752,28 @@
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;"><code>double</code></td>
-<td style="text-align: left;"><code>double</code>, <code>float</code>, <code>long</code>, <code>int</code></td>
+<td style="text-align: left;"><code>byte</code></td>
+<td style="text-align: left;"><code>byte</code></td>
 </tr>
 <tr>
-<td style="text-align: left;"><code>float</code></td>
-<td style="text-align: left;"><code>float</code>, <code>double</code> <em>(literal)</em>, <code>long</code>, <code>int</code></td>
+<td style="text-align: left;"><code>short</code></td>
+<td style="text-align: left;"><code>short</code>, <code>byte</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>int</code></td>
+<td style="text-align: left;"><code>int</code>, <code>short</code>, <code>byte</code></td>
 </tr>
 <tr>
 <td style="text-align: left;"><code>long</code></td>
-<td style="text-align: left;"><code>long</code>, <code>int</code></td>
+<td style="text-align: left;"><code>long</code>, <code>int</code>, <code>short</code>, <code>byte</code></td>
 </tr>
 <tr>
-<td style="text-align: left;"><code>int</code></td>
-<td style="text-align: left;"><code>int</code></td>
+<td style="text-align: left;"><code>double</code></td>
+<td style="text-align: left;"><code>double</code>, <code>float</code>, <code>long</code>, <code>int</code>, <code>short</code>, <code>byte</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>float</code></td>
+<td style="text-align: left;"><code>float</code>, <code>double</code> <em>(literal)</em>, <code>long</code>, <code>int</code>, <code>short</code>, <code>byte</code></td>
 </tr>
 <tr>
 <td style="text-align: left;"><code>boolean</code></td>
@@ -777,11 +785,15 @@
 </tr>
 </tbody>
 </table>
+<p>Em expressões aritméticas, <code>byte</code> e <code>short</code> são promovidos a <code>int</code>, como em Java.</p>
 <h3 id="3-validacao-de-expressoes-e-operadores">3. Validação de Expressões e Operadores</h3>
 <ul>
 <li><strong>Operadores Aritméticos (<code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>)</strong>: Requerem operandos numéricos compatíveis. A operação promove o tipo do resultado para o maior tipo envolvido.</li>
 <li><strong>Concatenação de Strings (<code>+</code>)</strong>: Se qualquer um dos operandos for do tipo <code>String</code>, o resultado da operação binária será <code>String</code>.</li>
-<li><strong>Condição de <code>if</code></strong>: A expressão condicional deve obrigatoriamente retornar o tipo <code>boolean</code>.</li>
+<li><strong>Operadores Relacionais (<code>==</code>, <code>!=</code>, <code>&lt;</code>, <code>&lt;=</code>, <code>&gt;</code>, <code>&gt;=</code>)</strong>: Requerem operandos de tipos compatíveis e resultam em <code>boolean</code>.</li>
+<li><strong>Condições de <code>if</code>, <code>while</code> e <code>for</code></strong>: A expressão condicional deve obrigatoriamente retornar o tipo <code>boolean</code>.</li>
+<li><strong>Incremento/Decremento (<code>++</code>, <code>--</code>)</strong>: A variável deve estar declarada e não pode ser do tipo <code>boolean</code> ou <code>String</code>.</li>
+<li><strong>Chamadas e Retornos</strong>: Métodos chamados devem estar declarados na classe; o valor retornado deve ser compatível com o tipo de retorno do método, e métodos <code>void</code> não podem retornar valor.</li>
 </ul>
 <hr />
 <h2 id="mensagens-de-erro-semantico">| Mensagens de Erro Semântico |</h2>
@@ -790,6 +802,10 @@
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>[Erro Semantico] Variavel 'y' nao declarada.
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>[Erro Semantico] Atribuicao incompativel para a variavel 'a'. Esperado: 'int', Recebido: 'double'.
 </span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>[Erro Semantico] A condicao da instrucao 'if' deve ser do tipo boolean. Recebido: 'int'.
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>[Erro Semantico] A condicao do 'while' deve ser do tipo boolean. Recebido: 'int'.
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>[Erro Semantico] Operacao '+' invalida entre os tipos 'int' e 'boolean'.
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>[Erro Semantico] Operacao '++' invalida para a variavel 'b' do tipo 'boolean'.
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>[Erro Semantico] Chamada a metodo nao declarado 'calcular'.
 </span></code></pre></div>
 
 
@@ -848,10 +864,10 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate", "content.tabs.link"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copiado para \u00e1rea de transfer\u00eancia", "clipboard.copy": "Copiar para \u00e1rea de transfer\u00eancia", "search.result.more.one": "Mais 1 nesta p\u00e1gina", "search.result.more.other": "Mais # nesta p\u00e1gina", "search.result.none": "Nenhum resultado encontrado", "search.result.one": "1 resultado encontrado", "search.result.other": "# resultados encontrados", "search.result.placeholder": "Digite para iniciar a busca", "search.result.term.missing": "Ausente", "select.version": "Selecione a vers\u00e3o"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate", "content.tabs.link"], "search": "../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copiado para \u00e1rea de transfer\u00eancia", "clipboard.copy": "Copiar para \u00e1rea de transfer\u00eancia", "search.result.more.one": "Mais 1 nesta p\u00e1gina", "search.result.more.other": "Mais # nesta p\u00e1gina", "search.result.none": "Nenhum resultado encontrado", "search.result.one": "1 resultado encontrado", "search.result.other": "# resultados encontrados", "search.result.placeholder": "Digite para iniciar a busca", "search.result.term.missing": "Ausente", "select.version": "Selecione a vers\u00e3o"}, "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../assets/javascripts/bundle.a5f9d56c.min.js"></script>
       
     
   </body>
