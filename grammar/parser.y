@@ -40,7 +40,7 @@ std::shared_ptr<ClassDeclNode> rootNode;
 %type <expr> expr numeric_update
 %type <stmt_list> stmt_list
 %type <stmt_list> else_opt
-%type <sval> type_specifier
+%type <sval> type_specifier array_type
 %type <expr_list> expr_list printf_args_opt expr_list_opt
 %type <param> param
 %type <param_list> param_list param_list_opt
@@ -81,6 +81,12 @@ type_specifier:
     | TYPE_CHAR   { $$ = strdup("char"); }
     | TYPE_LONG   { $$ = strdup("long"); }
     | TYPE_STRING { $$ = strdup("String"); } 
+    ;
+
+array_type:
+    type_specifier '[' ']' {
+        $$ = $1;
+    }
     ;
 
 function_decl:
@@ -196,15 +202,15 @@ var_decl:
         free($1);
         free($2);
     }
-    | type_specifier '[' ']' IDENTIFIER '=' expr {
-        $$ = new ArrayDeclNode($1, $4, std::shared_ptr<ExprNode>($6));
+    | array_type IDENTIFIER '=' expr {
+        $$ = new ArrayDeclNode($1, $2, std::shared_ptr<ExprNode>($4));
         free($1);
-        free($4);
+        free($2);
     }
-    | type_specifier '[' ']' IDENTIFIER {
-        $$ = new ArrayDeclNode($1, $4, nullptr);
+    | array_type IDENTIFIER {
+        $$ = new ArrayDeclNode($1, $2, nullptr);
         free($1);
-        free($4);
+        free($2);
     }
     ;
 
