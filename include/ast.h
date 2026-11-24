@@ -2,6 +2,7 @@
 #define AST_H
 
 #include <string>
+#include <utility>
 #include <vector>
 #include <memory>
 
@@ -25,6 +26,10 @@ class ForStmtNode;
 class UnaryStmtNode;
 class NumericUpdateExprNode;
 class ExprStmtNode;
+class ArrayDeclNode;
+class ArrayAllocNode;
+class ArrayAccessNode;
+class ArrayAssignNode;
 
 // Padrão Visitor para percorrer a AST
 class ASTVisitor {
@@ -50,6 +55,11 @@ public:
     virtual void visit(UnaryStmtNode* node) = 0;
     virtual void visit(NumericUpdateExprNode* node) = 0;
     virtual void visit(ExprStmtNode* node) = 0;
+    /* substitua "{}" por "= 0" quando impl. no codegen */
+    virtual void visit(ArrayDeclNode* node) {};
+    virtual void visit(ArrayAllocNode* node) {};
+    virtual void visit(ArrayAccessNode* node) {};
+    virtual void visit(ArrayAssignNode* node) {};
 };
 
 // Classe Base
@@ -128,6 +138,32 @@ public:
                           std::shared_ptr<ExprNode> expr = nullptr, bool isPrefix = false)
         : variable(std::move(variable)), op(std::move(op)), expr(std::move(expr)), isPrefix(isPrefix) {}
 
+    void accept(ASTVisitor* visitor) override {
+        visitor->visit(this);
+    }
+};
+
+class ArrayAllocNode : public ExprNode {
+public:
+    std::string elementType;
+    std::shared_ptr<ExprNode> sizeExpr;
+
+    ArrayAllocNode(std::string elementType, std::shared_ptr<ExprNode> sizeExpr)
+        : elementType(std::move(elementType)), sizeExpr(std::move(sizeExpr)) {}
+    
+    void accept(ASTVisitor* visitor) override {
+        visitor->visit(this);
+    }
+};
+
+class ArrayAccessNode: public ExprNode {
+public:
+    std::string identifier;
+    std::shared_ptr<ExprNode> indexExpr;
+
+    ArrayAccessNode(std::string identifier, std::shared_ptr<ExprNode> indexExpr)
+        : identifier(std::move(identifier)), indexExpr(std::move(indexExpr)) {}
+    
     void accept(ASTVisitor* visitor) override {
         visitor->visit(this);
     }
@@ -292,6 +328,34 @@ public:
     UnaryStmtNode(std::string id, std::string operation)
         : identifier(std::move(id)), op(std::move(operation)) {}
 
+    void accept(ASTVisitor* visitor) override {
+        visitor->visit(this);
+    }
+};
+
+class ArrayDeclNode : public StmtNode {
+public:
+    std::string elementType;
+    std::string name;
+    std::shared_ptr<ExprNode> initExpr;
+
+    ArrayDeclNode(std::string elementType, std::string name, std::shared_ptr<ExprNode> init = nullptr)
+        : elementType(std::move(elementType)), name(std::move(name)), initExpr(std::move(init)) {}
+
+    void accept(ASTVisitor* visitor) override {
+        visitor->visit(this);
+    }
+};
+
+class ArrayAssignNode : public StmtNode {
+public:
+    std::string identifier;
+    std::shared_ptr<ExprNode> indexExpr;
+    std::shared_ptr<ExprNode> valueExpr;
+
+    ArrayAssignNode(std::string identifier, std::shared_ptr<ExprNode> indexExpr, std::shared_ptr<ExprNode> valueExpr)
+        : identifier(std::move(identifier)), indexExpr(std::move(indexExpr)), valueExpr(std::move(valueExpr)) {}
+    
     void accept(ASTVisitor* visitor) override {
         visitor->visit(this);
     }

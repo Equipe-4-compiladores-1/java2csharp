@@ -42,6 +42,7 @@ WHITESPACE  [ \t\r\n]+
 "while"             { return WHILE; }
 "for"               { return FOR; }
 "return"            { return RETURN; }
+"new"               { return NEW; }
 "true"              { return TRUE; }
 "false"             { return FALSE; }
 "System.out.println" { return PRINTLN; }
