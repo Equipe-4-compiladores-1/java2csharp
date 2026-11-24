@@ -286,6 +286,11 @@ void CSharpCodegenVisitor::visit(BinaryExprNode* node) {
     node->right->accept(this);
 }
 
+void CSharpCodegenVisitor::visit(UnaryExprNode* node) {
+    std::cout << node->op;
+    if (node->expr) node->expr->accept(this);
+}
+
 void CSharpCodegenVisitor::visit(LiteralNode* node) {
     std::cout << node->value;
 }

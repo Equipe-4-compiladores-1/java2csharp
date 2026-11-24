@@ -31,6 +31,7 @@ std::shared_ptr<ClassDeclNode> rootNode;
 %token IF ELSE TRUE FALSE
 %token WHILE FOR
 %token EQ NE LT LE GT GE INC DEC
+%token AND OR NOT
 %token ADD_ASSIGN SUB_ASSIGN MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN
 
 %destructor { free($$); } <sval>
@@ -47,9 +48,12 @@ std::shared_ptr<ClassDeclNode> rootNode;
 %type <expr> for_cond
 
 %right UPDATE_ASSIGN
+%left OR
+%left AND
 %left EQ NE LT LE GT GE
 %left '+' '-'
 %left '*' '/'
+%right NOT
 
 %define parse.error detailed
 
@@ -218,6 +222,7 @@ assign_stmt:
 
 expr:
     '(' expr ')' { $$ = new ParenthesizedExprNode(std::shared_ptr<ExprNode>($2)); }
+    | NOT expr { $$ = new UnaryExprNode("!", std::shared_ptr<ExprNode>($2)); }
     | INT_LITERAL { $$ = new LiteralNode($1); free($1); }
     | FLOAT_LITERAL   { $$ = new LiteralNode($1); free($1); } 
     | CHAR_LITERAL    { $$ = new LiteralNode($1); free($1); }
@@ -251,6 +256,8 @@ expr:
     | expr LE expr { $$ = new BinaryExprNode("<=", std::shared_ptr<ExprNode>($1), std::shared_ptr<ExprNode>($3)); }
     | expr GT expr { $$ = new BinaryExprNode(">", std::shared_ptr<ExprNode>($1), std::shared_ptr<ExprNode>($3)); }
     | expr GE expr { $$ = new BinaryExprNode(">=", std::shared_ptr<ExprNode>($1), std::shared_ptr<ExprNode>($3)); }
+    | expr AND expr { $$ = new BinaryExprNode("&&", std::shared_ptr<ExprNode>($1), std::shared_ptr<ExprNode>($3)); }
+    | expr OR expr { $$ = new BinaryExprNode("||", std::shared_ptr<ExprNode>($1), std::shared_ptr<ExprNode>($3)); }
     ;
 
 numeric_update:

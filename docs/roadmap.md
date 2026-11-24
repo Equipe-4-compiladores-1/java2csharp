@@ -31,14 +31,14 @@ for (int i = 0; i < n; i++) { ... }
 
 ### 4. Operadores de Incremento/Decremento (`++` / `--`) — :material-check-all: *Concluído*
 
-* **Objetivo:** Suportar a forma pós-fixa como comando isolado e no incremento do `for`.
-* **AST:** Nó `UnaryStmtNode`.
+* **Objetivo:** Suportar as formas pós-fixa e pré-fixa como comandos, no incremento do `for` e em expressões.
+* **AST:** Nó `NumericUpdateExprNode`.
 * **Análise Semântica:** Rejeita o uso em variáveis não declaradas ou do tipo `boolean`/`String`.
 
-### 5. Atribuição Composta (`+=`, `-=`, `*=`, `/=`) — :material-progress-clock: *Em Andamento*
+### 5. Atribuição Composta (`+=`, `-=`, `*=`, `/=`, `%=`) — :material-check-all: *Concluído*
 
 * **Objetivo:** Reconhecer os operadores de atribuição composta no lexer/parser e traduzi-los para C#.
-* **Situação atual:** Ainda não suportados; utilize a forma expandida (`x = x + y`).
+* **Situação atual:** Suportados para variáveis numéricas e valores numéricos, como comandos ou em expressões.
 
 ---
 
@@ -48,7 +48,7 @@ for (int i = 0; i < n; i++) { ... }
 | --- | --- | --- | --- |
 | **Sprint 1** | **Fundação & E/S Procedural** | :material-check-circle: Concluída | • AST básica e padrão Visitor<br>• Tipos primitivos e variáveis locais<br>• Funções e métodos estáticos (`#1`)<br>• E/S básica (`print`, `println`, `printf`) |
 | **Sprint 2** | **Desvios & Análise Semântica** | :material-check-circle: Concluída | • Bloco condicional (`if/else`) (`#2`)<br>• Operadores relacionais (`==`, `!=`, `<`, `<=`, `>`, `>=`)<br>• Tabela de Símbolos com escopos aninhados<br>• Checagem e promoção de tipos (`refactor/checagem-tipos`) |
-| **Sprint 3** | **Laços de Repetição & Operadores** | :material-progress-clock: **Em Andamento** | • :material-check: Laços de repetição (`while` e `for`) (`#43`)<br>• :material-check: Operadores de incremento/decremento (`++`, `--`)<br>• :material-check: Tipos primitivos `byte` e `short`<br>• Atribuição composta (`+=`, `-=`)<br>• Documentação da sprint (`#38`) |
+| **Sprint 3** | **Laços de Repetição & Operadores** | :material-check-circle: Concluída | • :material-check: Laços de repetição (`while` e `for`) (`#43`)<br>• :material-check: Operadores de incremento/decremento (`++`, `--`)<br>• :material-check: Tipos primitivos `byte` e `short`<br>• :material-check: Atribuição composta (`+=`, `-=`, `*=`, `/=`, `%=`)<br>• Documentação da sprint (`#38`) |
 | **Sprint 4** | **Vetores Primitivos & Ajustes** | :material-clock-outline: Futura | • Suporte a arrays 1D de tipos primitivos (ex: `int[] arr`)<br>• Otimização e limpeza do código C# gerado |
 
 ---

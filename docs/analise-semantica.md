@@ -33,6 +33,7 @@ Em expressões aritméticas, `byte` e `short` são promovidos a `int`, como em J
 * **Operadores Aritméticos (`+`, `-`, `*`, `/`)**: Requerem operandos numéricos compatíveis. A operação promove o tipo do resultado para o maior tipo envolvido.
 * **Concatenação de Strings (`+`)**: Se qualquer um dos operandos for do tipo `String`, o resultado da operação binária será `String`.
 * **Operadores Relacionais (`==`, `!=`, `<`, `<=`, `>`, `>=`)**: Requerem operandos de tipos compatíveis e resultam em `boolean`.
+* **Operadores Lógicos (`&&`, `||`, `!`)**: Requerem operandos `boolean` e resultam em `boolean`. `!` é unário; `&&` e `||` são binários.
 * **Condições de `if`, `while` e `for`**: A expressão condicional deve obrigatoriamente retornar o tipo `boolean`.
 * **Incremento/Decremento (`++`, `--`)**: A variável deve estar declarada e não pode ser do tipo `boolean` ou `String`.
 * **Chamadas e Retornos**: Métodos chamados devem estar declarados na classe; o valor retornado deve ser compatível com o tipo de retorno do método, e métodos `void` não podem retornar valor.

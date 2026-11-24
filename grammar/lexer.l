@@ -58,6 +58,9 @@ WHITESPACE  [ \t\r\n]+
 "!="                { return NE; }
 "<="                { return LE; }
 ">="                { return GE; }
+"&&"                { return AND; }
+"||"                { return OR; }
+"!"                 { return NOT; }
 "<"                 { return LT; }
 ">"                 { return GT; }
 "+"                 { return '+'; }

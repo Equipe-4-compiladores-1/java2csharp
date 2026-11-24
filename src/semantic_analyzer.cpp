@@ -44,7 +44,7 @@ std::string SemanticAnalyzerVisitor::getPromotedType(const std::string& type1, c
         return "String";
     }
 
-    if (op == "==" || op == "!=" || op == "<" || op == ">" || op == "<=" || op == ">=" || op == "&&" || op == "||") {
+    if (op == "==" || op == "!=" || op == "<" || op == ">" || op == "<=" || op == ">=") {
         if (areTypesCompatible(t1, t2) || areTypesCompatible(t2, t1)) {
             return "boolean";
         }
@@ -244,12 +244,43 @@ void SemanticAnalyzerVisitor::visit(BinaryExprNode* node) {
         return;
     }
 
+    if (node->op == "&&" || node->op == "||") {
+        const bool leftIsBoolean = leftType == "boolean" || leftType == "bool";
+        const bool rightIsBoolean = rightType == "boolean" || rightType == "bool";
+        if (!leftIsBoolean || !rightIsBoolean) {
+            reportError("Operacao '" + node->op + "' exige operandos boolean. Recebido: '" +
+                        leftType + "' e '" + rightType + "'.");
+            currentExprType = "unknown";
+            return;
+        }
+        currentExprType = "boolean";
+        return;
+    }
+
     std::string resultType = getPromotedType(leftType, rightType, node->op);
     if (resultType == "unknown") {
         reportError("Operacao '" + node->op + "' invalida entre os tipos '" + leftType + "' e '" + rightType + "'.");
     }
 
     currentExprType = resultType;
+}
+
+void SemanticAnalyzerVisitor::visit(UnaryExprNode* node) {
+    if (node->expr) {
+        node->expr->accept(this);
+    } else {
+        currentExprType = "unknown";
+    }
+
+    if (currentExprType == "unknown") return;
+    if (currentExprType != "boolean" && currentExprType != "bool") {
+        reportError("Operacao '" + node->op + "' exige um operando boolean. Recebido: '" +
+                    currentExprType + "'.");
+        currentExprType = "unknown";
+        return;
+    }
+
+    currentExprType = "boolean";
 }
 
 void SemanticAnalyzerVisitor::visit(IfStmtNode* node) {
