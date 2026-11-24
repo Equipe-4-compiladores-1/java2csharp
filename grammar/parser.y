@@ -27,7 +27,7 @@ std::shared_ptr<ClassDeclNode> rootNode;
 
 %token <sval> IDENTIFIER INT_LITERAL FLOAT_LITERAL CHAR_LITERAL STRING_LITERAL
 %token TYPE_BYTE TYPE_SHORT TYPE_INT TYPE_DOUBLE TYPE_FLOAT TYPE_CHAR TYPE_LONG TYPE_BOOL TYPE_VOID
-%token RETURN CLASS PUBLIC STATIC TYPE_STRING PRINT PRINTLN PRINTF
+%token RETURN CLASS PUBLIC STATIC TYPE_STRING PRINT PRINTLN PRINTF NEW
 %token IF ELSE TRUE FALSE
 %token WHILE FOR
 %token EQ NE LT LE GT GE INC DEC
@@ -80,6 +80,7 @@ type_specifier:
     | TYPE_FLOAT  { $$ = strdup("float"); }
     | TYPE_CHAR   { $$ = strdup("char"); }
     | TYPE_LONG   { $$ = strdup("long"); }
+    | TYPE_STRING { $$ = strdup("String"); } 
     ;
 
 function_decl:
@@ -92,12 +93,13 @@ function_decl:
         free($1);
         free($2);
     }
-    | PUBLIC STATIC TYPE_VOID IDENTIFIER '(' TYPE_STRING '[' ']' IDENTIFIER ')' '{' stmt_list '}' {
+    | PUBLIC STATIC TYPE_VOID IDENTIFIER '(' type_specifier '[' ']' IDENTIFIER ')' '{' stmt_list '}' {
         auto func = std::make_shared<FunctionDeclNode>("void", $4);
         func->body = *$12;
         delete $12;
         programFunctions.push_back(func);
         free($4);
+        free($6);
         free($9);
     }
     ;
@@ -194,6 +196,16 @@ var_decl:
         free($1);
         free($2);
     }
+    | type_specifier '[' ']' IDENTIFIER '=' expr {
+        $$ = new ArrayDeclNode($1, $4, std::shared_ptr<ExprNode>($6));
+        free($1);
+        free($4);
+    }
+    | type_specifier '[' ']' IDENTIFIER {
+        $$ = new ArrayDeclNode($1, $4, nullptr);
+        free($1);
+        free($4);
+    }
     ;
 
 for_init:
@@ -216,6 +228,14 @@ for_inc:
 assign_stmt:
     IDENTIFIER '=' expr {
         $$ = new AssignStmtNode(std::string($1), std::shared_ptr<ExprNode>($3));
+        free($1);
+    }
+    | IDENTIFIER '[' expr ']' '=' expr {
+        $$ = new ArrayAssignNode(
+            std::string($1),
+            std::shared_ptr<ExprNode>($3),
+            std::shared_ptr<ExprNode>($6)
+        );
         free($1);
     }
     ;
@@ -244,6 +264,14 @@ expr:
         delete $5;
         free($1);
         free($3);
+    }
+    | NEW type_specifier '[' expr ']' {
+        $$ = new ArrayAllocNode($2, std::shared_ptr<ExprNode>($4));
+        free($2);
+    }
+    | IDENTIFIER '[' expr ']' {
+        $$ = new ArrayAccessNode(std::string($1), std::shared_ptr<ExprNode>($3));
+        free($1);
     }
     | numeric_update { $$ = $1; }
     | expr '+' expr { $$ = new BinaryExprNode("+", std::shared_ptr<ExprNode>($1), std::shared_ptr<ExprNode>($3)); }
