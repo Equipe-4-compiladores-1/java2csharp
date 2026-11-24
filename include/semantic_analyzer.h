@@ -44,6 +44,8 @@ public:
     void visit(UnaryStmtNode* node) override;
     void visit(NumericUpdateExprNode* node) override;
     void visit(ExprStmtNode* node) override;
+    void visit(ArrayDeclNode* node) override;
+    void visit(ArrayAllocNode* node) override;
 };
 
 #endif

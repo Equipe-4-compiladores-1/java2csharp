@@ -46,3 +46,16 @@ bool SymbolTable::isDeclaredInCurrentScope(const std::string& name) const {
     if (scopes.empty()) return false;
     return scopes.back().find(name) != scopes.back().end();
 }
+
+std::string SymbolTable::formatArrayType(const std::string& elementType, int dimensions) {
+    std::string fullType = elementType;
+    for (int i = 0; i < dimensions; ++i) {
+        fullType += "[]";
+    }
+    return fullType;
+}
+
+bool SymbolTable::defineArraySymbol(const std::string& name, const std::string& elementType, int dimensions, SymbolKind kind, bool initialized, int line) {
+    std::string arrayType = formatArrayType(elementType, dimensions);
+    return defineSymbol(name, SymbolInfo{name, arrayType, kind, initialized, line});
+}
