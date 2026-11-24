@@ -196,6 +196,22 @@ A precedência padrão é respeitada (`*` e `/` são avaliados antes de `+` e `-
 
 Os operandos precisam ter tipos compatíveis (ex.: comparar `int` com `boolean` gera erro semântico) e o resultado é sempre `boolean`, podendo ser usado como condição de `if`, `while` e `for`. Os operadores relacionais têm precedência menor que os aritméticos (`a + 1 > b` equivale a `(a + 1) > b`).
 
+#### Lógicos
+
+| Operador | Significado |
+| --- | --- |
+| `!` | Negação lógica |
+| `&&` | E lógico |
+| `||` | Ou lógico |
+
+`!` tem maior precedência que `&&`, e `&&` tem maior precedência que `||`. Os operandos devem ser do tipo `boolean`; o resultado de cada operação também é `boolean`. Parênteses podem ser usados para explicitar ou alterar a ordem:
+
+```java
+if (ativo && (!bloqueado || administrador)) {
+    System.out.println("Acesso permitido");
+}
+```
+
 #### Incremento e decremento
 
 | Operador | Significado | Equivalente |
@@ -240,7 +256,7 @@ Por se tratar de um transpilador focado no paradigma imperativo, os seguintes re
 * Herança, interfaces e polimorfismo (`extends`, `implements`).
 * Modificadores de acesso granulares em variáveis (`private`, `protected`).
 * Variáveis e parâmetros do tipo `String`.
-* Operadores lógicos (`&&`, `||`, `!`), módulo (`%`) e menos unário (`-x`, `-1`).
+* Módulo (`%`) e menos unário (`-x`, `-1`).
 * Atribuição composta (`+=`, `-=`, `*=`, `/=`) e incremento/decremento pré-fixo (`++x`).
 * `else if` encadeado, `do-while`, `switch`, `break` e `continue`.
 * Declaração de variáveis sem valor inicial (`int x;`).

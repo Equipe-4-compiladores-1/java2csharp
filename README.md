@@ -17,7 +17,7 @@ O projeto utiliza um fluxo de compilação em etapas desacopladas, validando reg
 - **Análise Sintática e AST:** Validação gramatical e construção da Árvore de Sintaxe Abstrata (AST) via Bison.
 - **Análise Semântica:** Uso de Tabela de Símbolos para validar existência de variáveis, escopos de bloco aninhados, redefinições, conflitos de parâmetros e compatibilidade de tipos (atribuições, retornos, operações e condições).
 - **Estruturas de Controle:** Desvios condicionais (`if/else`) e laços de repetição (`while` e `for`).
-- **Operadores:** Aritméticos (`+`, `-`, `*`, `/`), relacionais (`==`, `!=`, `<`, `<=`, `>`, `>=`) e incremento/decremento pós-fixo (`++`, `--`).
+- **Operadores:** Aritméticos (`+`, `-`, `*`, `/`), relacionais (`==`, `!=`, `<`, `<=`, `>`, `>=`), lógicos (`&&`, `||`, `!`) e incremento/decremento pós-fixo (`++`, `--`).
 - **Geração de Código (Visitor Pattern):** Emissão de código C# percorrendo a AST hierárquica (comandos, expressões e funções).
 - **Cobertura Automatizada:** Integração com `gcovr` para relatórios detalhados de cobertura de testes no terminal e em HTML.
 

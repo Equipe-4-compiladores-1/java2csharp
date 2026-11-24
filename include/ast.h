@@ -6,6 +6,7 @@
 #include <memory>
 
 class BinaryExprNode;
+class UnaryExprNode;
 class ParenthesizedExprNode;
 class LiteralNode;
 class VarDeclNode;
@@ -31,6 +32,7 @@ public:
     virtual ~ASTVisitor() = default;
     virtual void visit(ClassDeclNode* node) = 0;
     virtual void visit(BinaryExprNode* node) = 0;
+    virtual void visit(UnaryExprNode* node) = 0;
     virtual void visit(ParenthesizedExprNode* node) = 0;
     virtual void visit(LiteralNode* node) = 0;
     virtual void visit(VarDeclNode* node) = 0;
@@ -85,6 +87,17 @@ public:
 
     BinaryExprNode(std::string op, std::shared_ptr<ExprNode> l, std::shared_ptr<ExprNode> r)
         : op(std::move(op)), left(std::move(l)), right(std::move(r)) {}
+    void accept(ASTVisitor* visitor) override { visitor->visit(this); }
+};
+
+class UnaryExprNode : public ExprNode {
+public:
+    std::string op;
+    std::shared_ptr<ExprNode> expr;
+
+    UnaryExprNode(std::string op, std::shared_ptr<ExprNode> expr)
+        : op(std::move(op)), expr(std::move(expr)) {}
+
     void accept(ASTVisitor* visitor) override { visitor->visit(this); }
 };
 
