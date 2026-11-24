@@ -30,6 +30,9 @@ public:
 
     bool defineSymbol(const std::string& name, const SymbolInfo& info);
     bool defineSymbol(const std::string&name, const std::string& type, SymbolKind kind = SymbolKind::VARIABLE, bool initialized = false, int line = 0);
+    bool defineArraySymbol(const std::string& name, const std::string& elementType, int dimensions = 1, SymbolKind kind = SymbolKind::VARIABLE, bool initialized = false, int line = 0);
+
+    static std::string formatArrayType(const std::string& elementType, int dimensions = 1);
 
     bool resolveSymbol(const std::string& name, SymbolInfo& outInfo);
 

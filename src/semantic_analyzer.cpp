@@ -371,3 +371,32 @@ void SemanticAnalyzerVisitor::visit(UnaryStmtNode* node) {
         reportError("Operacao '" + node->op + "' invalida para a variavel '" + node->identifier + "' do tipo '" + info.type + "'.");
     }
 }
+
+void SemanticAnalyzerVisitor::visit(ArrayAllocNode* node) {
+    if (node->sizeExpr) {
+        node->sizeExpr->accept(this);
+        if (currentExprType != "unknown" && !areTypesCompatible("int", currentExprType)) {
+            reportError("O tamanho de alocacao de array deve ser 'int'. Recebido: '" + currentExprType + "'.");
+        }
+    }
+    currentExprType = SymbolTable::formatArrayType(node->elementType, 1);
+}
+
+void SemanticAnalyzerVisitor::visit(ArrayDeclNode* node) {
+    std::string expectedArrayType = SymbolTable::formatArrayType(node->elementType, 1);
+
+    if (node->initExpr) {
+        node->initExpr->accept(this);
+        std::string initType = currentExprType;
+
+        if (initType != "unknown" && !areTypesCompatible(expectedArrayType, initType)) {
+            reportError("Atribuicao incompativel na declaracao do array '" + node->name +
+                        "'. Esperado: '" + expectedArrayType + "', Recebido: '" + initType + "'.");
+        }
+    }
+
+    if (!symbolTable.defineArraySymbol(node->name, node->elementType, 1, SymbolKind::VARIABLE, node->initExpr != nullptr)) {
+        reportError("Variavel '" + node->name + "' ja foi declarada neste escopo.");
+    }
+    currentExprType = expectedArrayType;
+}
