@@ -218,20 +218,22 @@ if (ativo && (!bloqueado || administrador)) {
 | --- | --- | --- |
 | `x++` | Incrementa a variável em 1 | `x = x + 1` |
 | `x--` | Decrementa a variável em 1 | `x = x - 1` |
+| `++x` | Incrementa a variável em 1 | `x = x + 1` |
+| `--x` | Decrementa a variável em 1 | `x = x - 1` |
 
-São aceitos na forma **pós-fixa** como comando isolado (`contador++;`) ou na parte de incremento do `for`. Só podem ser aplicados a variáveis numéricas já declaradas; usar em `boolean` ou `String` gera erro semântico. A forma pré-fixa (`++x`) e o uso dentro de expressões (`int y = x++;`) não são suportados.
+São aceitos nas formas pós-fixa e pré-fixa, como comandos isolados, na parte de incremento do `for` e dentro de expressões. Só podem ser aplicados a variáveis numéricas já declaradas; usar em `boolean` ou `String` gera erro semântico.
 
 #### Atribuição composta
 
 | Operador | Equivalente | Status |
 | --- | --- | --- |
-| `x += y` | `x = x + y` | :material-clock-outline: Planejado |
-| `x -= y` | `x = x - y` | :material-clock-outline: Planejado |
-| `x *= y` | `x = x * y` | :material-clock-outline: Planejado |
-| `x /= y` | `x = x / y` | :material-clock-outline: Planejado |
+| `x += y` | `x = x + y` | :material-check-all: Suportado |
+| `x -= y` | `x = x - y` | :material-check-all: Suportado |
+| `x *= y` | `x = x * y` | :material-check-all: Suportado |
+| `x /= y` | `x = x / y` | :material-check-all: Suportado |
+| `x %= y` | `x = x % y` | :material-check-all: Suportado |
 
-Os operadores de atribuição composta ainda **não** são reconhecidos pelo lexer/parser. Até sua implementação, utilize a forma expandida (`x = x + y`).
-Reconhecimento de operações binárias respeitando a precedência padrão (`*`, `/` avaliados antes de `+`, `-`). Os operadores de atualização numérica aceitam incremento e decremento prefixados ou pós-fixados e atribuição composta, tanto como comandos quanto em expressões:
+Os operadores de atualização numérica são reconhecidos pelo lexer/parser e aceitam incremento e decremento pré-fixados ou pós-fixados e atribuição composta, tanto como comandos quanto em expressões:
 
 ```java
 valor++;
@@ -255,9 +257,8 @@ Por se tratar de um transpilador focado no paradigma imperativo, os seguintes re
 * Criação e instância de objetos (`new Objeto()`).
 * Herança, interfaces e polimorfismo (`extends`, `implements`).
 * Modificadores de acesso granulares em variáveis (`private`, `protected`).
-* Variáveis e parâmetros do tipo `String`.
-* Módulo (`%`) e menos unário (`-x`, `-1`).
-* Atribuição composta (`+=`, `-=`, `*=`, `/=`) e incremento/decremento pré-fixo (`++x`).
+* Declaração comum de variáveis e parâmetros do tipo `String`. Literais de String e o parâmetro `String[] args` do `main` são tratados pelo transpilador.
+* Operador módulo binário (`x % y`) e menos unário (`-x`, `-1`). A atribuição composta módulo (`%=`) é suportada.
 * `else if` encadeado, `do-while`, `switch`, `break` e `continue`.
 * Declaração de variáveis sem valor inicial (`int x;`).
 
