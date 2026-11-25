@@ -55,11 +55,10 @@ public:
     virtual void visit(UnaryStmtNode* node) = 0;
     virtual void visit(NumericUpdateExprNode* node) = 0;
     virtual void visit(ExprStmtNode* node) = 0;
-    /* substitua "{}" por "= 0" quando impl. no codegen */
-    virtual void visit(ArrayDeclNode* node) {};
-    virtual void visit(ArrayAllocNode* node) {};
-    virtual void visit(ArrayAccessNode* node) {};
-    virtual void visit(ArrayAssignNode* node) {};
+    virtual void visit(ArrayDeclNode* node) = 0;
+    virtual void visit(ArrayAllocNode* node) = 0;
+    virtual void visit(ArrayAccessNode* node) = 0;
+    virtual void visit(ArrayAssignNode* node) = 0;
 };
 
 // Classe Base
