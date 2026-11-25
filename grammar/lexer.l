@@ -68,6 +68,7 @@ WHITESPACE  [ \t\r\n]+
 "-"                 { return '-'; }
 "*"                 { return '*'; }
 "/"                 { return '/'; }
+"%"                 { return '%'; }
 "="                 { return '='; }
 ";"                 { return ';'; }
 ","                 { return ','; }

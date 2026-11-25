@@ -180,8 +180,9 @@ for (int j = 3; j > 0; j--) {
 | `-` | Subtração |
 | `*` | Multiplicação |
 | `/` | Divisão |
+| `%` | Resto da divisão |
 
-A precedência padrão é respeitada (`*` e `/` são avaliados antes de `+` e `-`) e parênteses podem ser usados para alterar a ordem de avaliação. O tipo do resultado é promovido para o maior tipo envolvido (ex.: `int + double` resulta em `double`).
+A precedência padrão é respeitada (`*`, `/` e `%` são avaliados antes de `+` e `-`) e parênteses podem ser usados para alterar a ordem de avaliação. O tipo do resultado é promovido para o maior tipo envolvido (ex.: `int + double` resulta em `double`). Os operandos de `%` devem ser numéricos.
 
 #### Relacionais
 
@@ -258,7 +259,7 @@ Por se tratar de um transpilador focado no paradigma imperativo, os seguintes re
 * Herança, interfaces e polimorfismo (`extends`, `implements`).
 * Modificadores de acesso granulares em variáveis (`private`, `protected`).
 * Declaração comum de variáveis e parâmetros do tipo `String`. Literais de String e o parâmetro `String[] args` do `main` são tratados pelo transpilador.
-* Operador módulo binário (`x % y`) e menos unário (`-x`, `-1`). A atribuição composta módulo (`%=`) é suportada.
+* Menos unário (`-x`, `-1`). A atribuição composta módulo (`%=`) também é suportada.
 * `else if` encadeado, `do-while`, `switch`, `break` e `continue`.
 * Declaração de variáveis sem valor inicial (`int x;`).
 

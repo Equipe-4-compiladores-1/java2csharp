@@ -52,7 +52,7 @@ std::shared_ptr<ClassDeclNode> rootNode;
 %left AND
 %left EQ NE LT LE GT GE
 %left '+' '-'
-%left '*' '/'
+%left '*' '/' '%'
 %right NOT
 
 %define parse.error detailed
@@ -284,6 +284,7 @@ expr:
     | expr '-' expr { $$ = new BinaryExprNode("-", std::shared_ptr<ExprNode>($1), std::shared_ptr<ExprNode>($3)); }
     | expr '*' expr { $$ = new BinaryExprNode("*", std::shared_ptr<ExprNode>($1), std::shared_ptr<ExprNode>($3)); }
     | expr '/' expr { $$ = new BinaryExprNode("/", std::shared_ptr<ExprNode>($1), std::shared_ptr<ExprNode>($3)); }
+    | expr '%' expr { $$ = new BinaryExprNode("%", std::shared_ptr<ExprNode>($1), std::shared_ptr<ExprNode>($3)); }
     | expr EQ expr { $$ = new BinaryExprNode("==", std::shared_ptr<ExprNode>($1), std::shared_ptr<ExprNode>($3)); }
     | expr NE expr { $$ = new BinaryExprNode("!=", std::shared_ptr<ExprNode>($1), std::shared_ptr<ExprNode>($3)); }
     | expr LT expr { $$ = new BinaryExprNode("<", std::shared_ptr<ExprNode>($1), std::shared_ptr<ExprNode>($3)); }

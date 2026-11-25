@@ -52,7 +52,7 @@ O **Java2CSharp** é um transpilador desenvolvido para converter um subconjunto 
 * **Funções estáticas:** declaração de múltiplos métodos com parâmetros e retorno, e chamadas como comando ou dentro de expressões.
 * **Desvios condicionais:** `if` / `else`, inclusive aninhados.
 * **Laços de repetição:** `while` e `for` (com declaração da variável de controle no cabeçalho).
-* **Operadores:** aritméticos (`+`, `-`, `*`, `/`), relacionais (`==`, `!=`, `<`, `<=`, `>`, `>=`) e incremento/decremento pós-fixo (`++`, `--`).
+* **Operadores:** aritméticos (`+`, `-`, `*`, `/`, `%`), relacionais (`==`, `!=`, `<`, `<=`, `>`, `>=`) e lógicos (`!`, `&&`, `||`); atribuições compostas (`+=`, `-=`, `*=`, `/=`, `%=`) e incremento/decremento pré-fixo e pós-fixo (`++`, `--`).
 * **Escopos de bloco:** cada método, bloco `if`/`else`, `while` e `for` abre um escopo próprio; variáveis declaradas dentro dele não são visíveis fora.
 * **Validação semântica de tipos:** variáveis não declaradas ou redefinidas, atribuições e retornos incompatíveis, operações inválidas entre tipos e condições não booleanas são rejeitadas antes da geração de código.
 * **Entrada e saída:** `System.out.print`, `println` e `printf` mapeados para `Console.Write` / `Console.WriteLine`.
@@ -105,4 +105,4 @@ Veja abaixo a conversão que o compilador realiza:
 ??? tip "Como testar localmente?"
     Consulte nosso **[Guia de Compilação](guia-de-uso.md)** para aprender a compilar o projeto com o CMake e rodar os testes automatizados.
 
----
+---
