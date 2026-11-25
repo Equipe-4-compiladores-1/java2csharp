@@ -324,3 +324,51 @@ void CSharpCodegenVisitor::visit(UnaryStmtNode* node) {
     
     if (!inForHeader) std::cout << ";\n"; 
 }
+// =========================================================================
+// 5. ARRAYS 1D (Declaração, Alocação, Acesso e Atribuição)
+// =========================================================================
+
+void CSharpCodegenVisitor::visit(ArrayDeclNode* node) {
+    if (!inForHeader) printIndent();
+
+    std::cout << toCSharpType(node->elementType) << "[] " << node->name;
+
+    if (node->initExpr) {
+        std::cout << " = ";
+        node->initExpr->accept(this);
+    }
+
+    if (!inForHeader) std::cout << ";\n";
+}
+
+void CSharpCodegenVisitor::visit(ArrayAllocNode* node) {
+    std::cout << "new " << toCSharpType(node->elementType) << "[";
+    if (node->sizeExpr) {
+        node->sizeExpr->accept(this);
+    }
+    std::cout << "]";
+}
+
+void CSharpCodegenVisitor::visit(ArrayAccessNode* node) {
+    std::cout << node->identifier << "[";
+    if (node->indexExpr) {
+        node->indexExpr->accept(this);
+    }
+    std::cout << "]";
+}
+
+void CSharpCodegenVisitor::visit(ArrayAssignNode* node) {
+    if (!inForHeader) printIndent();
+
+    std::cout << node->identifier << "[";
+    if (node->indexExpr) {
+        node->indexExpr->accept(this);
+    }
+    std::cout << "] = ";
+
+    if (node->valueExpr) {
+        node->valueExpr->accept(this);
+    }
+
+    if (!inForHeader) std::cout << ";\n";
+}
