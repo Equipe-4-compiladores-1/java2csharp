@@ -32,6 +32,13 @@ int somar(byte a, short b) {
 }
 ```
 
+#### Comportamento Semântico de Tipos Vetorizados
+Quando um tipo é declarado como vetor unidimensional (`T[]`, como `int[]` ou `double[]`), a **Tabela de Símbolos** registra a variável preservando o modificador de dimensão no identificador de tipo (`"int[]"`, `"double[]"`):
+
+* **Invariância na alocação e atribuição:** Diferente das conversões implícitas de alargamento (*widening*) aplicadas a variáveis escalares (onde um `double` aceita um `int`), tipos vetorizados exigem correspondência exata de tipo base na alocação e atribuição (ex.: `double[] v = new int[5];` é rejeitado pelo analisador semântico).
+* **Extração do tipo base na indexação:** Ao ler ou atribuir um elemento via índice (`arr[i]`), o analisador verifica se a variável possui sufixo de dimensão `[]` (rejeitando indexação de variáveis escalares), exige que o índice seja compatível com `int` e resolve o tipo da expressão para o tipo base do elemento (`T`).
+* **Restrição de operadores escalares:** Operadores aritméticos (`+`, `-`, `*`, `/`) e de atualização numérica (`++`, `--`, `+=`) não podem ser aplicados diretamente sobre a referência do vetor (`arr++` ou `a + b`), apenas sobre seus elementos indexados (`arr[i]++`).
+
 !!! note "Tipos `byte` e `short`"
     Variáveis e parâmetros `byte`/`short` podem ser atribuídos a tipos maiores (`short`, `int`, `long`, `float`, `double`), e em expressões aritméticas são promovidos a `int`, como no Java. Como todo literal inteiro é tratado como `int`, uma declaração como `byte b = 1;` é rejeitada pelo analisador semântico — o valor deve vir de outra variável ou parâmetro `byte`.
 
@@ -79,7 +86,41 @@ int contador = 0;
 contador = contador + 1;
 ```
 
-### 6. Estruturas de Controle de Fluxo
+### 6. Estruturas de Dados
+
+O transpilador oferece suporte a **coleções contíguas em memória** por meio de **vetores unidimensionais (Arrays 1D)** de tipos primitivos (`int[]`, `double[]`, `boolean[]`, `char[]`, etc.).
+
+#### Declaração e Alocação Dinâmica (`new`)
+Um vetor pode ser declarado apenas com sua assinatura de tipo (para alocação posterior) ou já inicializado com o operador `new` e uma expressão inteira que define seu tamanho:
+
+```java
+// Declaração seguida de alocação
+int[] arr;
+arr = new int[5];
+
+// Declaração com alocação imediata e tamanho dinâmico
+int tamanho = 10;
+double[] notas = new double[tamanho];
+```
+
+#### Acesso e Modificação por Índice
+
+Os elementos são lidos e modificados utilizando colchetes `[ ]` com qualquer expressão aritmética que resulte em `int`:
+
+```java
+arr[0] = 10;
+arr[i + 1] = arr[i] * 2;
+int valor = arr[0];
+```
+
+!!! warning "Limitações Procedurais de Vetores"
+Nesta versão, o suporte a coleções em memória possui as seguintes restrições:
+
+* **Apenas uma dimensão (1D):** Matrizes ou arrays multidimensionais (`int[][]`, `new int[2][2]`) não são suportados.
+* **Estilo de declaração Java:** Os colchetes devem vir junto ao tipo (`int[] arr`), e não após o identificador (`int arr[]`).
+* **Sem inicialização literal em linha:** Expressões como `int[] arr = {1, 2, 3};` não são suportadas; utilize sempre `new tipo[tamanho]`.
+
+### 7. Estruturas de Controle de Fluxo
 
 Cada bloco (`if`, `else`, `while`, `for`) abre um **escopo próprio**: variáveis declaradas dentro dele não são visíveis fora. As condições precisam ser expressões do tipo `boolean`, caso contrário o analisador semântico emite um erro. As chaves `{ }` são obrigatórias em todos os blocos.
 
@@ -170,7 +211,7 @@ for (int j = 3; j > 0; j--) {
         }
         ```
 
-### 7. Operadores
+### 8. Operadores
 
 #### Aritméticos
 
@@ -262,5 +303,6 @@ Por se tratar de um transpilador focado no paradigma imperativo, os seguintes re
 * Declaração comum de variáveis e parâmetros do tipo `String`. Literais de String e o parâmetro `String[] args` do `main` são tratados pelo transpilador.
 * `else if` encadeado, `do-while`, `switch`, `break` e `continue`.
 * Declaração de variáveis sem valor inicial (`int x;`).
+* Arrays multidimensionais (`int[][]`), inicialização literal com chaves (`{1, 2, 3}`) e sintaxe de colchetes após o nome da variável (`int arr[]`).
 
 ---
