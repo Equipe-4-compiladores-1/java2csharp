@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.1">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.2">
     
     
       
@@ -612,10 +612,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#5-atribuicao-composta-em-andamento" class="md-nav__link">
+  <a href="#5-atribuicao-composta-concluido" class="md-nav__link">
     <span class="md-ellipsis">
       
-        5. Atribuição Composta (+=, -=, *=, /=) — Em Andamento
+        5. Atribuição Composta (+=, -=, *=, /=, %=) — Concluído
       
     </span>
   </a>
@@ -729,10 +729,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#5-atribuicao-composta-em-andamento" class="md-nav__link">
+  <a href="#5-atribuicao-composta-concluido" class="md-nav__link">
     <span class="md-ellipsis">
       
-        5. Atribuição Composta (+=, -=, *=, /=) — Em Andamento
+        5. Atribuição Composta (+=, -=, *=, /=, %=) — Concluído
       
     </span>
   </a>
@@ -800,14 +800,14 @@
 </ul>
 <h3 id="4-operadores-de-incrementodecremento-concluido">4. Operadores de Incremento/Decremento (<code>++</code> / <code>--</code>) — <span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M.41 13.41 6 19l1.41-1.42L1.83 12m20.41-6.42L11.66 16.17 7.5 12l-1.43 1.41L11.66 19l12-12M18 7l-1.41-1.42-6.35 6.35 1.42 1.41z"/></svg></span> <em>Concluído</em></h3>
 <ul>
-<li><strong>Objetivo:</strong> Suportar a forma pós-fixa como comando isolado e no incremento do <code>for</code>.</li>
-<li><strong>AST:</strong> Nó <code>UnaryStmtNode</code>.</li>
+<li><strong>Objetivo:</strong> Suportar as formas pós-fixa e pré-fixa como comandos, no incremento do <code>for</code> e em expressões.</li>
+<li><strong>AST:</strong> Nó <code>NumericUpdateExprNode</code>.</li>
 <li><strong>Análise Semântica:</strong> Rejeita o uso em variáveis não declaradas ou do tipo <code>boolean</code>/<code>String</code>.</li>
 </ul>
-<h3 id="5-atribuicao-composta-em-andamento">5. Atribuição Composta (<code>+=</code>, <code>-=</code>, <code>*=</code>, <code>/=</code>) — <span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 2.03v2.02c4.39.54 7.5 4.53 6.96 8.92-.46 3.64-3.32 6.53-6.96 6.96v2c5.5-.55 9.5-5.43 8.95-10.93-.45-4.75-4.22-8.5-8.95-8.97m-2 .03c-1.95.19-3.81.94-5.33 2.2L7.1 5.74c1.12-.9 2.47-1.48 3.9-1.68zM4.26 5.67A9.9 9.9 0 0 0 2.05 11h2c.19-1.42.75-2.77 1.64-3.9zM2.06 13c.2 1.96.97 3.81 2.21 5.33l1.42-1.43A8 8 0 0 1 4.06 13zm5.04 5.37-1.43 1.37A10 10 0 0 0 11 22v-2a8 8 0 0 1-3.9-1.63M12.5 7v5.25l4.5 2.67-.75 1.23L11 13V7z"/></svg></span> <em>Em Andamento</em></h3>
+<h3 id="5-atribuicao-composta-concluido">5. Atribuição Composta (<code>+=</code>, <code>-=</code>, <code>*=</code>, <code>/=</code>, <code>%=</code>) — <span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M.41 13.41 6 19l1.41-1.42L1.83 12m20.41-6.42L11.66 16.17 7.5 12l-1.43 1.41L11.66 19l12-12M18 7l-1.41-1.42-6.35 6.35 1.42 1.41z"/></svg></span> <em>Concluído</em></h3>
 <ul>
 <li><strong>Objetivo:</strong> Reconhecer os operadores de atribuição composta no lexer/parser e traduzi-los para C#.</li>
-<li><strong>Situação atual:</strong> Ainda não suportados; utilize a forma expandida (<code>x = x + y</code>).</li>
+<li><strong>Situação atual:</strong> Suportados para variáveis numéricas e valores numéricos, como comandos ou em expressões.</li>
 </ul>
 <hr />
 <h2 id="planejamento-de-sprints-backlog-imperativo">| Planejamento de Sprints (Backlog Imperativo) |</h2>
@@ -836,8 +836,8 @@
 <tr>
 <td><strong>Sprint 3</strong></td>
 <td><strong>Laços de Repetição &amp; Operadores</strong></td>
-<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 2.03v2.02c4.39.54 7.5 4.53 6.96 8.92-.46 3.64-3.32 6.53-6.96 6.96v2c5.5-.55 9.5-5.43 8.95-10.93-.45-4.75-4.22-8.5-8.95-8.97m-2 .03c-1.95.19-3.81.94-5.33 2.2L7.1 5.74c1.12-.9 2.47-1.48 3.9-1.68zM4.26 5.67A9.9 9.9 0 0 0 2.05 11h2c.19-1.42.75-2.77 1.64-3.9zM2.06 13c.2 1.96.97 3.81 2.21 5.33l1.42-1.43A8 8 0 0 1 4.06 13zm5.04 5.37-1.43 1.37A10 10 0 0 0 11 22v-2a8 8 0 0 1-3.9-1.63M12.5 7v5.25l4.5 2.67-.75 1.23L11 13V7z"/></svg></span> <strong>Em Andamento</strong></td>
-<td>• <span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59z"/></svg></span> Laços de repetição (<code>while</code> e <code>for</code>) (<code>#43</code>)<br>• <span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59z"/></svg></span> Operadores de incremento/decremento (<code>++</code>, <code>--</code>)<br>• <span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59z"/></svg></span> Tipos primitivos <code>byte</code> e <code>short</code><br>• Atribuição composta (<code>+=</code>, <code>-=</code>)<br>• Documentação da sprint (<code>#38</code>)</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2m-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8z"/></svg></span> Concluída</td>
+<td>• <span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59z"/></svg></span> Laços de repetição (<code>while</code> e <code>for</code>) (<code>#43</code>)<br>• <span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59z"/></svg></span> Operadores de incremento/decremento (<code>++</code>, <code>--</code>)<br>• <span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59z"/></svg></span> Tipos primitivos <code>byte</code> e <code>short</code><br>• <span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59z"/></svg></span> Atribuição composta (<code>+=</code>, <code>-=</code>, <code>*=</code>, <code>/=</code>, <code>%=</code>)<br>• Documentação da sprint (<code>#38</code>)</td>
 </tr>
 <tr>
 <td><strong>Sprint 4</strong></td>
