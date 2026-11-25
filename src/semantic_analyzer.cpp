@@ -6,6 +6,15 @@ bool isNumericType(const std::string& type) {
     return type == "byte" || type == "short" || type == "int" || type == "long" ||
            type == "float" || type == "double" || type == "char";
 }
+
+bool isArrayType(const std::string& type) {
+    return type.size() >= 2 && type.substr(type.size() - 2) == "[]";
+}
+
+std::string getArrayElementType(const std::string& arrayType) {
+    return arrayType.substr(0, arrayType.size() - 2);
+}
+
 }
 
 void SemanticAnalyzerVisitor::reportError(const std::string& message) {
@@ -399,4 +408,65 @@ void SemanticAnalyzerVisitor::visit(ArrayDeclNode* node) {
         reportError("Variavel '" + node->name + "' ja foi declarada neste escopo.");
     }
     currentExprType = expectedArrayType;
+}
+
+void SemanticAnalyzerVisitor::visit(ArrayAccessNode* node) {
+    SymbolInfo info;
+    if (!symbolTable.resolveSymbol(node->identifier, info)) {
+        reportError("Variavel '" + node->identifier + "' nao declarada.");
+        if (node->indexExpr) node->indexExpr->accept(this);
+        currentExprType = "unknown";
+        return;
+    }
+
+    if (info.kind == SymbolKind::FUNCTION || !isArrayType(info.type)) {
+        reportError("A variavel '" + node->identifier + "' do tipo '" + info.type + "' nao e um vetor e nao pode ser indexada.");
+        if (node->indexExpr) node->indexExpr->accept(this);
+        currentExprType = "unknown";
+        return;
+    }
+
+    if (node->indexExpr) {
+        node->indexExpr->accept(this);
+        if (currentExprType != "unknown" && !areTypesCompatible("int", currentExprType)) {
+            reportError("O indice do vetor '" + node->identifier + "' deve ser do tipo 'int'. Recebido: '" + currentExprType + "'.");
+        }
+    }
+
+    currentExprType = getArrayElementType(info.type);
+}
+
+void SemanticAnalyzerVisitor::visit(ArrayAssignNode* node) {
+    SymbolInfo info;
+    if (!symbolTable.resolveSymbol(node->identifier, info)) {
+        reportError("Atribuicao a variavel nao declarada '" + node->identifier + "'.");
+        if (node->indexExpr) node->indexExpr->accept(this);
+        if (node->valueExpr) node->valueExpr->accept(this);
+        return;
+    }
+
+    if (info.kind == SymbolKind::FUNCTION || !isArrayType(info.type)) {
+        reportError("A variavel '" + node->identifier + "' do tipo '" + info.type + "' nao e um vetor e nao pode ser indexada.");
+        if (node->indexExpr) node->indexExpr->accept(this);
+        if (node->valueExpr) node->valueExpr->accept(this);
+        return;
+    }
+
+    if (node->indexExpr) {
+        node->indexExpr->accept(this);
+        if (currentExprType != "unknown" && !areTypesCompatible("int", currentExprType)) {
+            reportError("O indice do vetor '" + node->identifier + "' deve ser do tipo 'int'. Recebido: '" + currentExprType + "'.");
+        }
+    }
+
+    if (node->valueExpr) {
+        std::string elementType = getArrayElementType(info.type);
+        node->valueExpr->accept(this);
+        std::string rightType = currentExprType;
+
+        if (rightType != "unknown" && !areTypesCompatible(elementType, rightType)) {
+            reportError("Atribuicao incompativel para elemento do vetor '" + node->identifier +
+                        "'. Esperado: '" + elementType + "', Recebido: '" + rightType + "'.");
+        }
+    }
 }
