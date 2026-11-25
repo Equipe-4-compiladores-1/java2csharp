@@ -31,6 +31,7 @@ Em expressões aritméticas, `byte` e `short` são promovidos a `int`, como em J
 
 ### 3. Validação de Expressões e Operadores
 * **Operadores Aritméticos (`+`, `-`, `*`, `/`, `%`)**: Requerem operandos numéricos compatíveis. A operação promove o tipo do resultado para o maior tipo envolvido.
+* **Menos unário (`-x`)**: Requer um operando numérico; `byte`, `short` e `char` são promovidos a `int`.
 * **Concatenação de Strings (`+`)**: Se qualquer um dos operandos for do tipo `String`, o resultado da operação binária será `String`.
 * **Operadores Relacionais (`==`, `!=`, `<`, `<=`, `>`, `>=`)**: Requerem operandos de tipos compatíveis e resultam em `boolean`.
 * **Operadores Lógicos (`&&`, `||`, `!`)**: Requerem operandos `boolean` e resultam em `boolean`. `!` é unário; `&&` e `||` são binários.

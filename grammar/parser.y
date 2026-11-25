@@ -53,7 +53,7 @@ std::shared_ptr<ClassDeclNode> rootNode;
 %left EQ NE LT LE GT GE
 %left '+' '-'
 %left '*' '/' '%'
-%right NOT
+%right NOT UMINUS
 
 %define parse.error detailed
 
@@ -249,6 +249,7 @@ assign_stmt:
 expr:
     '(' expr ')' { $$ = new ParenthesizedExprNode(std::shared_ptr<ExprNode>($2)); }
     | NOT expr { $$ = new UnaryExprNode("!", std::shared_ptr<ExprNode>($2)); }
+    | '-' expr %prec UMINUS { $$ = new UnaryExprNode("-", std::shared_ptr<ExprNode>($2)); }
     | INT_LITERAL { $$ = new LiteralNode($1); free($1); }
     | FLOAT_LITERAL   { $$ = new LiteralNode($1); free($1); } 
     | CHAR_LITERAL    { $$ = new LiteralNode($1); free($1); }
