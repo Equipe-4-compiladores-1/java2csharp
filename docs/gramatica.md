@@ -260,7 +260,7 @@ Por se tratar de um transpilador focado no paradigma imperativo, os seguintes re
 * Herança, interfaces e polimorfismo (`extends`, `implements`).
 * Modificadores de acesso granulares em variáveis (`private`, `protected`).
 * Declaração comum de variáveis e parâmetros do tipo `String`. Literais de String e o parâmetro `String[] args` do `main` são tratados pelo transpilador.
-* `else if` encadeado, `do-while`, `switch`, `break` e `continue`.
+* `else if` encadeado, `do-while` e `switch`.
 * Declaração de variáveis sem valor inicial (`int x;`).
 
 ---
