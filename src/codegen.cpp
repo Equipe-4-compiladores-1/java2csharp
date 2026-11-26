@@ -372,3 +372,6 @@ void CSharpCodegenVisitor::visit(ArrayAssignNode* node) {
 
     if (!inForHeader) std::cout << ";\n";
 }
+
+void CSharpCodegenVisitor::visit(BreakStmtNode* node) {}
+void CSharpCodegenVisitor::visit(ContinueStmtNode* node) {}

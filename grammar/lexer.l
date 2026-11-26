@@ -42,6 +42,8 @@ WHITESPACE  [ \t\r\n]+
 "while"             { return WHILE; }
 "for"               { return FOR; }
 "return"            { return RETURN; }
+"break"             { return BREAK; }
+"continue"          { return CONTINUE; }
 "new"               { return NEW; }
 "true"              { return TRUE; }
 "false"             { return FALSE; }

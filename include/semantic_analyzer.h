@@ -48,6 +48,8 @@ public:
     void visit(ArrayAllocNode* node) override;
     void visit(ArrayAccessNode* node) override;
     void visit(ArrayAssignNode* node) override;
+    void visit(BreakStmtNode* node) override;
+    void visit(ContinueStmtNode* node) override;
 };
 
 #endif
