@@ -30,6 +30,8 @@ class ArrayDeclNode;
 class ArrayAllocNode;
 class ArrayAccessNode;
 class ArrayAssignNode;
+class BreakStmtNode;
+class ContinueStmtNode;
 
 // Padrão Visitor para percorrer a AST
 class ASTVisitor {
@@ -59,6 +61,8 @@ public:
     virtual void visit(ArrayAllocNode* node) = 0;
     virtual void visit(ArrayAccessNode* node) = 0;
     virtual void visit(ArrayAssignNode* node) = 0;
+    virtual void visit(BreakStmtNode* node) = 0;
+    virtual void visit(ContinueStmtNode* node) = 0;
 };
 
 // Classe Base
@@ -211,6 +215,17 @@ public:
 
     VarDeclNode(std::string type, std::string name, std::shared_ptr<ExprNode> init = nullptr)
         : type(std::move(type)), name(std::move(name)), initExpr(std::move(init)) {}
+    void accept(ASTVisitor* visitor) override { visitor->visit(this); }
+};
+
+// Comandos de salto: so sao validos dentro de lacos (verificado na analise semantica)
+class BreakStmtNode : public StmtNode {
+public:
+    void accept(ASTVisitor* visitor) override { visitor->visit(this); }
+};
+
+class ContinueStmtNode : public StmtNode {
+public:
     void accept(ASTVisitor* visitor) override { visitor->visit(this); }
 };
 

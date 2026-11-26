@@ -30,6 +30,7 @@ std::shared_ptr<ClassDeclNode> rootNode;
 %token RETURN CLASS PUBLIC STATIC TYPE_STRING PRINT PRINTLN PRINTF NEW
 %token IF ELSE TRUE FALSE
 %token WHILE FOR
+%token BREAK CONTINUE
 %token EQ NE LT LE GT GE INC DEC
 %token AND OR NOT
 %token ADD_ASSIGN SUB_ASSIGN MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN
@@ -131,6 +132,8 @@ stmt:
     var_decl ';' { $$ = $1; }
     | RETURN expr ';' { $$ = new ReturnStmtNode(std::shared_ptr<ExprNode>($2)); }
     | RETURN ';' { $$ = new ReturnStmtNode(nullptr); }
+    | BREAK ';' { $$ = new BreakStmtNode(); }
+    | CONTINUE ';' { $$ = new ContinueStmtNode(); }
     | PRINT '(' expr ')' ';' { $$ = new PrintStmtNode(std::shared_ptr<ExprNode>($3), false); }
     | PRINTLN '(' expr ')' ';' { $$ = new PrintStmtNode(std::shared_ptr<ExprNode>($3), true); }
     | PRINTF '(' STRING_LITERAL  printf_args_opt ')' ';' { 

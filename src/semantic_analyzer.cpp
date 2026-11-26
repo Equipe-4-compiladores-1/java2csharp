@@ -486,3 +486,6 @@ void SemanticAnalyzerVisitor::visit(ArrayAssignNode* node) {
         }
     }
 }
+
+void SemanticAnalyzerVisitor::visit(BreakStmtNode* node) {}
+void SemanticAnalyzerVisitor::visit(ContinueStmtNode* node) {}
