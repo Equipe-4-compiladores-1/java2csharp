@@ -84,6 +84,7 @@ void SemanticAnalyzerVisitor::visit(ClassDeclNode* node) {
 void SemanticAnalyzerVisitor::visit(FunctionDeclNode* node) {
     symbolTable.enterScope();
     currentFunctionReturnType = node->returnType;
+    loopDepth = 0;
 
     for (const auto& param : node->params) {
         SymbolInfo info{param.name, param.type, SymbolKind::PARAMETER, true};
@@ -358,9 +359,11 @@ void SemanticAnalyzerVisitor::visit(WhileStmtNode* node) {
     }
 
     symbolTable.enterScope();
+    loopDepth++;
     for (auto stmt : node->body) {
         if (stmt) stmt->accept(this);
     }
+    loopDepth--;
     symbolTable.exitScope();
 }
 
@@ -378,9 +381,11 @@ void SemanticAnalyzerVisitor::visit(ForStmtNode* node) {
 
     if (node->increment) node->increment->accept(this);
 
+    loopDepth++;
     for (auto stmt : node->body) {
         if (stmt) stmt->accept(this);
     }
+    loopDepth--;
 
     symbolTable.exitScope();
 }
@@ -487,5 +492,14 @@ void SemanticAnalyzerVisitor::visit(ArrayAssignNode* node) {
     }
 }
 
-void SemanticAnalyzerVisitor::visit(BreakStmtNode* node) {}
-void SemanticAnalyzerVisitor::visit(ContinueStmtNode* node) {}
+void SemanticAnalyzerVisitor::visit(BreakStmtNode* node) {
+    if (loopDepth == 0) {
+        reportError("Comando 'break' fora de um laco.");
+    }
+}
+
+void SemanticAnalyzerVisitor::visit(ContinueStmtNode* node) {
+    if (loopDepth == 0) {
+        reportError("Comando 'continue' fora de um laco.");
+    }
+}
