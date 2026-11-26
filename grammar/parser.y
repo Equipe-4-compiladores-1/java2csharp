@@ -52,8 +52,8 @@ std::shared_ptr<ClassDeclNode> rootNode;
 %left AND
 %left EQ NE LT LE GT GE
 %left '+' '-'
-%left '*' '/'
-%right NOT
+%left '*' '/' '%'
+%right NOT UMINUS
 
 %define parse.error detailed
 
@@ -249,6 +249,7 @@ assign_stmt:
 expr:
     '(' expr ')' { $$ = new ParenthesizedExprNode(std::shared_ptr<ExprNode>($2)); }
     | NOT expr { $$ = new UnaryExprNode("!", std::shared_ptr<ExprNode>($2)); }
+    | '-' expr %prec UMINUS { $$ = new UnaryExprNode("-", std::shared_ptr<ExprNode>($2)); }
     | INT_LITERAL { $$ = new LiteralNode($1); free($1); }
     | FLOAT_LITERAL   { $$ = new LiteralNode($1); free($1); } 
     | CHAR_LITERAL    { $$ = new LiteralNode($1); free($1); }
@@ -284,6 +285,7 @@ expr:
     | expr '-' expr { $$ = new BinaryExprNode("-", std::shared_ptr<ExprNode>($1), std::shared_ptr<ExprNode>($3)); }
     | expr '*' expr { $$ = new BinaryExprNode("*", std::shared_ptr<ExprNode>($1), std::shared_ptr<ExprNode>($3)); }
     | expr '/' expr { $$ = new BinaryExprNode("/", std::shared_ptr<ExprNode>($1), std::shared_ptr<ExprNode>($3)); }
+    | expr '%' expr { $$ = new BinaryExprNode("%", std::shared_ptr<ExprNode>($1), std::shared_ptr<ExprNode>($3)); }
     | expr EQ expr { $$ = new BinaryExprNode("==", std::shared_ptr<ExprNode>($1), std::shared_ptr<ExprNode>($3)); }
     | expr NE expr { $$ = new BinaryExprNode("!=", std::shared_ptr<ExprNode>($1), std::shared_ptr<ExprNode>($3)); }
     | expr LT expr { $$ = new BinaryExprNode("<", std::shared_ptr<ExprNode>($1), std::shared_ptr<ExprNode>($3)); }

@@ -282,14 +282,30 @@ void SemanticAnalyzerVisitor::visit(UnaryExprNode* node) {
     }
 
     if (currentExprType == "unknown") return;
-    if (currentExprType != "boolean" && currentExprType != "bool") {
-        reportError("Operacao '" + node->op + "' exige um operando boolean. Recebido: '" +
-                    currentExprType + "'.");
-        currentExprType = "unknown";
+    if (node->op == "!") {
+        if (currentExprType != "boolean" && currentExprType != "bool") {
+            reportError("Operacao '" + node->op + "' exige um operando boolean. Recebido: '" +
+                        currentExprType + "'.");
+            currentExprType = "unknown";
+            return;
+        }
+
+        currentExprType = "boolean";
         return;
     }
 
-    currentExprType = "boolean";
+    if (node->op == "-") {
+        if (!isNumericType(currentExprType)) {
+            reportError("Operacao '" + node->op + "' exige um operando numerico. Recebido: '" +
+                        currentExprType + "'.");
+            currentExprType = "unknown";
+            return;
+        }
+
+        if (currentExprType == "byte" || currentExprType == "short" || currentExprType == "char") {
+            currentExprType = "int";
+        }
+    }
 }
 
 void SemanticAnalyzerVisitor::visit(IfStmtNode* node) {
