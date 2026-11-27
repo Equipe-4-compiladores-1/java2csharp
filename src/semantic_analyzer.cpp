@@ -100,6 +100,10 @@ void SemanticAnalyzerVisitor::visit(FunctionDeclNode* node) {
 }
 
 void SemanticAnalyzerVisitor::visit(VarDeclNode* node) {
+    if (node->type == "void") {
+        reportError("A variavel '" + node->name + "' nao pode ser declarada com o tipo 'void'.");
+    }
+
     std::string initType;
     if (node->initExpr) {
         node->initExpr->accept(this);

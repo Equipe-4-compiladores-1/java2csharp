@@ -83,10 +83,13 @@ void CSharpCodegenVisitor::visit(FunctionDeclNode* node) {
 void CSharpCodegenVisitor::visit(VarDeclNode* node) {
     if (!inForHeader) printIndent(); 
     
-    std::string type = (node->type == "boolean") ? "bool" : node->type;
-    std::cout << type << " " << node->name << " = ";
+    std::string type = toCSharpType(node->type);
+    std::cout << type << " " << node->name;
     
-    if (node->initExpr) node->initExpr->accept(this);
+    if (node->initExpr) {
+        std::cout << " = ";
+        node->initExpr->accept(this);
+    }
     
     if (!inForHeader) std::cout << ";\n";
 }

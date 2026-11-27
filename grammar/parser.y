@@ -202,6 +202,11 @@ var_decl:
         free($1);
         free($2);
     }
+    | type_specifier IDENTIFIER {
+        $$ = new VarDeclNode($1, $2, nullptr);
+        free($1);
+        free($2);
+    }
     | array_type IDENTIFIER '=' expr {
         $$ = new ArrayDeclNode($1, $2, std::shared_ptr<ExprNode>($4));
         free($1);
