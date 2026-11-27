@@ -788,7 +788,8 @@
 <p>Em expressões aritméticas, <code>byte</code> e <code>short</code> são promovidos a <code>int</code>, como em Java.</p>
 <h3 id="3-validacao-de-expressoes-e-operadores">3. Validação de Expressões e Operadores</h3>
 <ul>
-<li><strong>Operadores Aritméticos (<code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>)</strong>: Requerem operandos numéricos compatíveis. A operação promove o tipo do resultado para o maior tipo envolvido.</li>
+<li><strong>Operadores Aritméticos (<code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, <code>%</code>)</strong>: Requerem operandos numéricos compatíveis. A operação promove o tipo do resultado para o maior tipo envolvido.</li>
+<li><strong>Menos unário (<code>-x</code>)</strong>: Requer um operando numérico; <code>byte</code>, <code>short</code> e <code>char</code> são promovidos a <code>int</code>.</li>
 <li><strong>Concatenação de Strings (<code>+</code>)</strong>: Se qualquer um dos operandos for do tipo <code>String</code>, o resultado da operação binária será <code>String</code>.</li>
 <li><strong>Operadores Relacionais (<code>==</code>, <code>!=</code>, <code>&lt;</code>, <code>&lt;=</code>, <code>&gt;</code>, <code>&gt;=</code>)</strong>: Requerem operandos de tipos compatíveis e resultam em <code>boolean</code>.</li>
 <li><strong>Operadores Lógicos (<code>&amp;&amp;</code>, <code>||</code>, <code>!</code>)</strong>: Requerem operandos <code>boolean</code> e resultam em <code>boolean</code>. <code>!</code> é unário; <code>&amp;&amp;</code> e <code>||</code> são binários.</li>

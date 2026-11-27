@@ -1370,6 +1370,10 @@
 <td>Subtração</td>
 </tr>
 <tr>
+<td><code>-x</code></td>
+<td>Menos unário (inverte o sinal de <code>x</code>)</td>
+</tr>
+<tr>
 <td><code>*</code></td>
 <td>Multiplicação</td>
 </tr>
@@ -1377,9 +1381,13 @@
 <td><code>/</code></td>
 <td>Divisão</td>
 </tr>
+<tr>
+<td><code>%</code></td>
+<td>Resto da divisão</td>
+</tr>
 </tbody>
 </table>
-<p>A precedência padrão é respeitada (<code>*</code> e <code>/</code> são avaliados antes de <code>+</code> e <code>-</code>) e parênteses podem ser usados para alterar a ordem de avaliação. O tipo do resultado é promovido para o maior tipo envolvido (ex.: <code>int + double</code> resulta em <code>double</code>).</p>
+<p>A precedência padrão é respeitada (<code>*</code>, <code>/</code> e <code>%</code> são avaliados antes de <code>+</code> e <code>-</code>), e o menos unário tem precedência maior que os operadores binários. Parênteses podem ser usados para alterar a ordem de avaliação. O tipo do resultado é promovido para o maior tipo envolvido (ex.: <code>int + double</code> resulta em <code>double</code>). Os operandos de <code>%</code> e do menos unário devem ser numéricos.</p>
 <h4 id="relacionais">Relacionais</h4>
 <table>
 <thead>
@@ -1534,7 +1542,6 @@
 <li>Herança, interfaces e polimorfismo (<code>extends</code>, <code>implements</code>).</li>
 <li>Modificadores de acesso granulares em variáveis (<code>private</code>, <code>protected</code>).</li>
 <li>Declaração comum de variáveis e parâmetros do tipo <code>String</code>. Literais de String e o parâmetro <code>String[] args</code> do <code>main</code> são tratados pelo transpilador.</li>
-<li>Operador módulo binário (<code>x % y</code>) e menos unário (<code>-x</code>, <code>-1</code>). A atribuição composta módulo (<code>%=</code>) é suportada.</li>
 <li><code>else if</code> encadeado, <code>do-while</code>, <code>switch</code>, <code>break</code> e <code>continue</code>.</li>
 <li>Declaração de variáveis sem valor inicial (<code>int x;</code>).</li>
 <li>Arrays multidimensionais (<code>int[][]</code>), inicialização literal com chaves (<code>{1, 2, 3}</code>) e sintaxe de colchetes após o nome da variável (<code>int arr[]</code>).</li>
