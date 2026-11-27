@@ -22,7 +22,7 @@ O **Java2CSharp** é um transpilador desenvolvido para converter um subconjunto 
 
     ---
 
-    Mapeamento direto de variáveis, tipos primitivos, expressões aritméticas/relacionais, desvios, laços e funções.
+    Mapeamento direto de variáveis, tipos primitivos, coleções em memória (Arrays 1D), expressões aritméticas/relacionais, desvios, laços e funções.
 
 -   :material-cube-outline: **Encapsulamento C#**
 
@@ -40,7 +40,7 @@ O **Java2CSharp** é um transpilador desenvolvido para converter um subconjunto 
 
     ---
 
-    Tabela de Símbolos com escopos aninhados e checagem de tipos antes da geração do código C#.
+    Tabela de Símbolos com escopos aninhados e checagem de tipos (escalares e vetorizados) antes da geração do código C#.
 
 </div>
 
@@ -49,12 +49,13 @@ O **Java2CSharp** é um transpilador desenvolvido para converter um subconjunto 
 ## :material-check-decagram: Capacidades Atuais
 
 * **Tipos primitivos:** `byte`, `short`, `int`, `long`, `float`, `double`, `boolean` e `char`, com promoção implícita de tipos numéricos (*widening*).
+* **Coleções de dados em memória (Arrays 1D):** declaração de vetores unidimensionais (`int[] arr`), alocação dinâmica com `new` (`new int[tamanho]`) e leitura/modificação por índices numéricos (`arr[i]`), integrados de forma nativa às iterações conjuntas com laços `for` e `while`.
 * **Funções estáticas:** declaração de múltiplos métodos com parâmetros e retorno, e chamadas como comando ou dentro de expressões.
 * **Desvios condicionais:** `if` / `else`, inclusive aninhados.
-* **Laços de repetição:** `while` e `for` (com declaração da variável de controle no cabeçalho).
-* **Operadores:** aritméticos (`+`, `-`, `*`, `/`, `%`) e menos unário (`-x`), relacionais (`==`, `!=`, `<`, `<=`, `>`, `>=`) e lógicos (`!`, `&&`, `||`); atribuições compostas (`+=`, `-=`, `*=`, `/=`, `%=`) e incremento/decremento pré-fixo e pós-fixo (`++`, `--`).
+* **Laços de repetição:** `while` e `for` (com declaração da variável de controle no cabeçalho e percurso sequencial sobre vetores).
+* **Operadores:** aritméticos (`+`, `-`, `*`, `/`, `%`) e menos unário (`-x`), relacionais (`==`, `!=`, `<`, `<=`, `>`, `>=`), lógicos (`&&`, `||`, `!`), atribuição composta (`+=`, `-=`, `*=`, `/=`, `%=`) e incremento/decremento (`++`, `--`).
 * **Escopos de bloco:** cada método, bloco `if`/`else`, `while` e `for` abre um escopo próprio; variáveis declaradas dentro dele não são visíveis fora.
-* **Validação semântica de tipos:** variáveis não declaradas ou redefinidas, atribuições e retornos incompatíveis, operações inválidas entre tipos e condições não booleanas são rejeitadas antes da geração de código.
+* **Validação semântica de tipos:** variáveis não declaradas ou redefinidas, atribuições e retornos incompatíveis, alocações de array com tipos divergentes, indexação de variáveis escalares e condições não booleanas são rejeitadas antes da geração de código.
 * **Entrada e saída:** `System.out.print`, `println` e `printf` mapeados para `Console.Write` / `Console.WriteLine`.
 
 Detalhes de cada construção estão em **[Gramática & Tokens](gramatica.md)** e as regras de validação em **[Análise Semântica](analise-semantica.md)**.

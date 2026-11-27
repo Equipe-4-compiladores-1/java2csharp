@@ -84,6 +84,62 @@ Erros sintáticos informam a linha, o termo exato que não pôde ser compilado e
 
 Erros semânticos são descritos na página [Análise Semântica](analise-semantica.md).
 
+## :material-code-tags: Exemplo Prático: Preenchimento e Leitura de Vetores
+
+O exemplo abaixo demonstra a declaração, alocação dinâmica com `new` e iteração sobre vetores unidimensionais utilizando laços `for` e `while`, comparando lado a lado o código Java de entrada com o C# gerado pelo transpilador:
+
+=== "Java (Entrada)"
+
+    ```java
+    class PreenchimentoVetor {
+        public static void main(String[] args) {
+            int tamanho = 5;
+            int[] numeros;
+            numeros = new int[tamanho];
+
+            for (int i = 0; i < tamanho; i++) {
+                numeros[i] = i * 10;
+            }
+
+            int soma = 0;
+            int idx = 0;
+            while (idx < tamanho) {
+                soma += numeros[idx];
+                idx++;
+            }
+
+            System.out.println(soma);
+        }
+    }
+    ```
+
+=== "C# (Saída Gerada)"
+
+    ```csharp
+    using System;
+
+    namespace TranspiledProgram {
+        public static class PreenchimentoVetor {
+            public static void Main(string[] args) {
+                int tamanho = 5;
+                int[] numeros;
+                numeros = new int[tamanho];
+                for (int i = 0; i < tamanho; i++) {
+                    numeros[i] = i * 10;
+                }
+                int soma = 0;
+                int idx = 0;
+                while (idx < tamanho) {
+                    soma += numeros[idx];
+                    idx++;
+                }
+                Console.WriteLine(soma);
+            }
+
+        }
+    }
+    ```
+
 ## :material-test-tube: Executando os Testes
 
 Após compilar, execute a suíte de testes de regressão a partir do diretório `build`:
