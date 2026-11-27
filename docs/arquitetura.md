@@ -4,13 +4,14 @@ O **Java2CSharp** segue a arquitetura clássica de compiladores de back-end, pro
 
 ## :material-layers: Pipeline de Compilação
 
-O fluxo de dados desde a leitura do arquivo `.java` até a geração do `.cs` ocorre em cinco fases principais:
+O fluxo de dados desde a leitura do arquivo `.java` até a geração do `.cs` ocorre em seis fases principais:
 
 1. **Análise Léxica (Lex / Flex):** Lê a string de texto puro do arquivo fonte e agrupa os caracteres em unidades de significado chamadas de *Tokens* (ex: `IDENTIFIER`, `INT_LITERAL`, `TYPE_INT`).
 2. **Análise Sintática (Yacc / Bison):** Consome os tokens gerados pelo Lexer e valida se a sequência forma sentenças válidas segundo as regras da gramática do nosso subconjunto Java.
 3. **Construção da AST:** Durante a validação sintática, o Bison instancia nós C++ em memória (`ExprNode`, `StmtNode`, `ClassDeclNode`), formando a Árvore Sintática Abstrata (AST) que representa o programa.
-4. **Análise Semântica:** O `SemanticAnalyzerVisitor` percorre a AST usando a Tabela de Símbolos para validar escopos e tipos. Se algum erro for encontrado, a compilação é interrompida antes da geração de código.
-5. **Geração de Código (Visitor Pattern):** A árvore é percorrida por um `CSharpCodegenVisitor`. Cada nó visitado emite sua própria string C# formatada, compondo o arquivo final.
+4. **Análise Semântica:** O `SemanticAnalyzerVisitor` percorre a AST usando a Tabela de Símbolos para validar escopos e tipos. Se algum erro for encontrado, a compilação é interrompida antes da otimização e da geração de código.
+5. **Otimização da AST:** Após a análise semântica, o passe `foldConstants` avalia expressões aritméticas, relacionais e lógicas compostas por constantes. Chamadas de método não são executadas e operações inválidas, como divisão por zero, não são calculadas.
+6. **Geração de Código (Visitor Pattern):** A árvore otimizada é percorrida por um `CSharpCodegenVisitor`. Cada nó visitado emite sua própria string C# formatada, compondo o arquivo final.
 
 ## :material-file-tree: Árvore Sintática Abstrata (AST)
 
@@ -24,6 +25,6 @@ Nós principais implementados em `ast.h`:
 * **Expressões (Expressions):** `BinaryExprNode`, `UnaryExprNode`, `ParenthesizedExprNode`, `LiteralNode`, `StringNode`, `MethodCallExprNode`, `NumericUpdateExprNode`.
 
 !!! info "Por que usar o Padrão Visitor?"
-    O padrão Visitor (`ASTVisitor`) permite que adicionemos novas funcionalidades (como um avaliador semântico) sem precisar alterar as classes da nossa AST. Toda a lógica de tradução para C# fica isolada no arquivo `codegen.cpp`, e a validação semântica em `semantic_analyzer.cpp`.
+    O padrão Visitor (`ASTVisitor`) permite adicionar operações sobre a AST sem alterar suas classes. A geração de C# fica em `codegen.cpp` e a validação semântica em `semantic_analyzer.cpp`. A otimização é um passe separado, implementado em `optimizer.cpp`;
 
----
+---
