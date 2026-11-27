@@ -714,7 +714,7 @@
 <li>
 <p><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m21 9-4-4v3h-7v2h7v3M7 11l-4 4 4 4v-3h7v-2H7z"/></svg></span> <strong>Tradução Procedural</strong></p>
 <hr />
-<p>Mapeamento direto de variáveis, tipos primitivos, expressões aritméticas/relacionais, desvios, laços e funções.</p>
+<p>Mapeamento direto de variáveis, tipos primitivos, coleções em memória (Arrays 1D), expressões aritméticas/relacionais, desvios, laços e funções.</p>
 </li>
 <li>
 <p><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 16.5c0 .38-.21.71-.53.88l-7.9 4.44c-.16.12-.36.18-.57.18s-.41-.06-.57-.18l-7.9-4.44A.99.99 0 0 1 3 16.5v-9c0-.38.21-.71.53-.88l7.9-4.44c.16-.12.36-.18.57-.18s.41.06.57.18l7.9 4.44c.32.17.53.5.53.88zM12 4.15 6.04 7.5 12 10.85l5.96-3.35zM5 15.91l6 3.38v-6.71L5 9.21zm14 0v-6.7l-6 3.37v6.71z"/></svg></span> <strong>Encapsulamento C#</strong></p>
@@ -729,7 +729,7 @@
 <li>
 <p><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m10 17-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9m-6-8L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5z"/></svg></span> <strong>Validação Semântica</strong></p>
 <hr />
-<p>Tabela de Símbolos com escopos aninhados e checagem de tipos antes da geração do código C#.</p>
+<p>Tabela de Símbolos com escopos aninhados e checagem de tipos (escalares e vetorizados) antes da geração do código C#.</p>
 </li>
 </ul>
 </div>
@@ -737,12 +737,13 @@
 <h2 id="capacidades-atuais"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m23 12-2.44-2.78.34-3.68-3.61-.82-1.89-3.18L12 3 8.6 1.54 6.71 4.72l-3.61.81.34 3.68L1 12l2.44 2.78-.34 3.69 3.61.82 1.89 3.18L12 21l3.4 1.46 1.89-3.18 3.61-.82-.34-3.68zm-13 5-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9z"/></svg></span> Capacidades Atuais</h2>
 <ul>
 <li><strong>Tipos primitivos:</strong> <code>byte</code>, <code>short</code>, <code>int</code>, <code>long</code>, <code>float</code>, <code>double</code>, <code>boolean</code> e <code>char</code>, com promoção implícita de tipos numéricos (<em>widening</em>).</li>
+<li><strong>Coleções de dados em memória (Arrays 1D):</strong> declaração de vetores unidimensionais (<code>int[] arr</code>), alocação dinâmica com <code>new</code> (<code>new int[tamanho]</code>) e leitura/modificação por índices numéricos (<code>arr[i]</code>), integrados de forma nativa às iterações conjuntas com laços <code>for</code> e <code>while</code>.</li>
 <li><strong>Funções estáticas:</strong> declaração de múltiplos métodos com parâmetros e retorno, e chamadas como comando ou dentro de expressões.</li>
 <li><strong>Desvios condicionais:</strong> <code>if</code> / <code>else</code>, inclusive aninhados.</li>
-<li><strong>Laços de repetição:</strong> <code>while</code> e <code>for</code> (com declaração da variável de controle no cabeçalho).</li>
-<li><strong>Operadores:</strong> aritméticos (<code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>), relacionais (<code>==</code>, <code>!=</code>, <code>&lt;</code>, <code>&lt;=</code>, <code>&gt;</code>, <code>&gt;=</code>) e incremento/decremento pós-fixo (<code>++</code>, <code>--</code>).</li>
+<li><strong>Laços de repetição:</strong> <code>while</code> e <code>for</code> (com declaração da variável de controle no cabeçalho e percurso sequencial sobre vetores).</li>
+<li><strong>Operadores:</strong> aritméticos (<code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>), relacionais (<code>==</code>, <code>!=</code>, <code>&lt;</code>, <code>&lt;=</code>, <code>&gt;</code>, <code>&gt;=</code>), lógicos (<code>&amp;&amp;</code>, <code>||</code>, <code>!</code>), atribuição composta (<code>+=</code>, <code>-=</code>, <code>*=</code>, <code>/=</code>, <code>%=</code>) e incremento/decremento (<code>++</code>, <code>--</code>).</li>
 <li><strong>Escopos de bloco:</strong> cada método, bloco <code>if</code>/<code>else</code>, <code>while</code> e <code>for</code> abre um escopo próprio; variáveis declaradas dentro dele não são visíveis fora.</li>
-<li><strong>Validação semântica de tipos:</strong> variáveis não declaradas ou redefinidas, atribuições e retornos incompatíveis, operações inválidas entre tipos e condições não booleanas são rejeitadas antes da geração de código.</li>
+<li><strong>Validação semântica de tipos:</strong> variáveis não declaradas ou redefinidas, atribuições e retornos incompatíveis, alocações de array com tipos divergentes, indexação de variáveis escalares e condições não booleanas são rejeitadas antes da geração de código.</li>
 <li><strong>Entrada e saída:</strong> <code>System.out.print</code>, <code>println</code> e <code>printf</code> mapeados para <code>Console.Write</code> / <code>Console.WriteLine</code>.</li>
 </ul>
 <p>Detalhes de cada construção estão em <strong><a href="gramatica/">Gramática &amp; Tokens</a></strong> e as regras de validação em <strong><a href="analise-semantica/">Análise Semântica</a></strong>.</p>
