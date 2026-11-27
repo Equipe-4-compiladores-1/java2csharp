@@ -82,24 +82,33 @@ void SemanticAnalyzerVisitor::visit(ClassDeclNode* node) {
 }
 
 void SemanticAnalyzerVisitor::visit(FunctionDeclNode* node) {
-    symbolTable.enterScope();
+    std::string previousReturnType = currentFunctionReturnType;
     currentFunctionReturnType = node->returnType;
 
+    symbolTable.enterScope();
+
     for (const auto& param : node->params) {
-        SymbolInfo info{param.name, param.type, SymbolKind::PARAMETER, true};
-        if (!symbolTable.defineSymbol(param.name, info)) {
-            reportError("Variavel '" + param.name + "' ja foi declarada neste escopo.");
+        SymbolInfo paramInfo{param.name, param.type, SymbolKind::PARAMETER, true};
+        if (!symbolTable.defineSymbol(param.name, paramInfo)) {
+            reportError("Parametro '" + param.name + "' duplicado na funcao '" + node->name + "'.");
         }
     }
 
     for (const auto& stmt : node->body) {
-        if (stmt) stmt->accept(this);
+        if (stmt) {
+            stmt->accept(this);
+        }
     }
 
     symbolTable.exitScope();
+    currentFunctionReturnType = previousReturnType;
 }
 
 void SemanticAnalyzerVisitor::visit(VarDeclNode* node) {
+    if (node->type == "void") {
+        reportError("A variavel '" + node->name + "' nao pode ser declarada com o tipo 'void'.");
+    }
+
     std::string initType;
     if (node->initExpr) {
         node->initExpr->accept(this);
@@ -168,25 +177,37 @@ void SemanticAnalyzerVisitor::visit(NumericUpdateExprNode* node) {
     SymbolInfo info;
     if (!symbolTable.resolveSymbol(node->variable, info)) {
         reportError("Variavel '" + node->variable + "' nao declarada.");
-        if (node->expr) node->expr->accept(this);
         currentExprType = "unknown";
         return;
     }
 
     if (info.kind == SymbolKind::FUNCTION) {
-        reportError("O alvo do operador '" + node->op + "' deve ser uma variavel.");
-    } else if (!isNumericType(info.type)) {
-        reportError("O operador '" + node->op + "' exige uma variavel numerica. Recebido: '" + info.type + "'.");
+        reportError("Nao e possivel atualizar a funcao '" + node->variable + "'.");
+        currentExprType = "unknown";
+        return;
     }
 
-    currentExprType = info.kind == SymbolKind::FUNCTION ? "unknown" : info.type;
+    if (info.kind == SymbolKind::VARIABLE && !info.isInitialized) {
+        reportError("Variavel '" + node->variable + "' utilizada antes de ser inicializada.");
+    }
+
+    if (!isNumericType(info.type)) {
+        reportError("Operacao numerica invalida para '" + node->variable +
+                    "' do tipo '" + info.type + "'.");
+        currentExprType = "unknown";
+        return;
+    }
+
     if (node->expr) {
         node->expr->accept(this);
-        if (currentExprType != "unknown" && !isNumericType(currentExprType)) {
-            reportError("O operador '" + node->op + "' exige um valor numerico. Recebido: '" + currentExprType + "'.");
+        std::string rightType = currentExprType;
+        if (rightType != "unknown" && !isNumericType(rightType)) {
+            reportError("Operando direito incompativel na atualizacao de '" + node->variable +
+                        "'. Esperado numerico, Recebido: '" + rightType + "'.");
         }
-        currentExprType = info.kind == SymbolKind::FUNCTION ? "unknown" : info.type;
     }
+
+    currentExprType = info.type;
 }
 
 void SemanticAnalyzerVisitor::visit(ExprStmtNode* node) {
@@ -215,6 +236,9 @@ void SemanticAnalyzerVisitor::visit(LiteralNode* node) {
 
     SymbolInfo info;
     if (symbolTable.resolveSymbol(val, info)) {
+        if (info.kind == SymbolKind::VARIABLE && !info.isInitialized) {
+            reportError("Variavel '" + val + "' utilizada antes de ser inicializada.");
+        }
         currentExprType = info.type;
         return;
     }
@@ -335,6 +359,12 @@ void SemanticAnalyzerVisitor::visit(AssignStmtNode* node) {
     SymbolInfo info;
     if (!symbolTable.resolveSymbol(node->identifier, info)) {
         reportError("Atribuicao a variavel nao declarada '" + node->identifier + "'.");
+        if (node->expr) node->expr->accept(this);
+        return;
+    }
+
+    if (info.kind == SymbolKind::FUNCTION) {
+        reportError("Nao e possivel atribuir valor a funcao '" + node->identifier + "'.");
         return;
     }
 
@@ -347,6 +377,8 @@ void SemanticAnalyzerVisitor::visit(AssignStmtNode* node) {
                         "'. Esperado: '" + info.type + "', Recebido: '" + rightType + "'.");
         }
     }
+
+    symbolTable.markAsInitialized(node->identifier);
 }
 
 void SemanticAnalyzerVisitor::visit(WhileStmtNode* node) {
@@ -388,12 +420,22 @@ void SemanticAnalyzerVisitor::visit(ForStmtNode* node) {
 void SemanticAnalyzerVisitor::visit(UnaryStmtNode* node) {
     SymbolInfo info;
     if (!symbolTable.resolveSymbol(node->identifier, info)) {
-        reportError("Operacao '" + node->op + "' em variavel nao declarada '" + node->identifier + "'.");
+        reportError("Variavel '" + node->identifier + "' nao declarada.");
         return;
     }
 
-    if (info.type == "boolean" || info.type == "bool" || info.type == "String") {
-        reportError("Operacao '" + node->op + "' invalida para a variavel '" + node->identifier + "' do tipo '" + info.type + "'.");
+    if (info.kind == SymbolKind::FUNCTION) {
+        reportError("Nao e possivel aplicar operador unario a funcao '" + node->identifier + "'.");
+        return;
+    }
+
+    if (info.kind == SymbolKind::VARIABLE && !info.isInitialized) {
+        reportError("Variavel '" + node->identifier + "' utilizada antes de ser inicializada.");
+    }
+
+    if (!isNumericType(info.type)) {
+        reportError("Operador unario requer tipo numerico para '" + node->identifier +
+                    "'. Recebido: '" + info.type + "'.");
     }
 }
 
@@ -442,6 +484,10 @@ void SemanticAnalyzerVisitor::visit(ArrayAccessNode* node) {
         return;
     }
 
+    if (info.kind == SymbolKind::VARIABLE && !info.isInitialized) {
+        reportError("Vetor '" + node->identifier + "' utilizado antes de ser inicializado.");
+    }
+
     if (node->indexExpr) {
         node->indexExpr->accept(this);
         if (currentExprType != "unknown" && !areTypesCompatible("int", currentExprType)) {
@@ -466,6 +512,10 @@ void SemanticAnalyzerVisitor::visit(ArrayAssignNode* node) {
         if (node->indexExpr) node->indexExpr->accept(this);
         if (node->valueExpr) node->valueExpr->accept(this);
         return;
+    }
+
+    if (info.kind == SymbolKind::VARIABLE && !info.isInitialized) {
+        reportError("Vetor '" + node->identifier + "' utilizado antes de ser inicializado.");
     }
 
     if (node->indexExpr) {

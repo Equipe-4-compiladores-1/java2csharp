@@ -36,6 +36,8 @@ public:
 
     bool resolveSymbol(const std::string& name, SymbolInfo& outInfo);
 
+    bool markAsInitialized(const std::string& name);
+
     bool isDeclaredInCurrentScope(const std::string& name) const;
 };
 
