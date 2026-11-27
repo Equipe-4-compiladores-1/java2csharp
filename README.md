@@ -5,6 +5,8 @@
 ![GNU](https://img.shields.io/badge/Flex_&_Bison-A42E2B?logo=gnu&logoColor=white)
 ![Linux](https://img.shields.io/badge/Linux-FCC624?logo=linux&logoColor=black)
 
+Documentação: https://equipe-4-compiladores-1.github.io/java2csharp/
+
 ## Visão geral
 
 O **Java2CSharp** é um transpilador desenvolvido para a disciplina de **Compiladores 1**. Ele foca no subconjunto imperativo e procedural da linguagem **Java**, validando a estrutura do código e convertendo-o para uma representação equivalente em **C#**.
