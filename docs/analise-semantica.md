@@ -29,6 +29,10 @@ $$\text{byte} \longrightarrow \text{short} \longrightarrow \text{int} \longright
 
 Em expressões aritméticas, `byte` e `short` são promovidos a `int`, como em Java.
 
+Vetores 1D possuem correspondência exata de tipo base na declaração e na alocação. Por exemplo, `double[] v = new int[5];` é rejeitado. A indexação exige um índice compatível com `int` e transforma o tipo vetorizado no tipo de seu elemento. Vetores não podem ser usados diretamente como valores aritméticos.
+
+Na geração de código C#, `byte` escalares são preservados como `byte`, enquanto vetores `byte[]` são traduzidos para `sbyte[]`, porque `sbyte` representa o intervalo com sinal do tipo Java `byte`.
+
 ### 3. Validação de Expressões e Operadores
 * **Operadores Aritméticos (`+`, `-`, `*`, `/`, `%`)**: Requerem operandos numéricos compatíveis. A operação promove o tipo do resultado para o maior tipo envolvido.
 * **Menos unário (`-x`)**: Requer um operando numérico; `byte`, `short` e `char` são promovidos a `int`.
@@ -37,6 +41,9 @@ Em expressões aritméticas, `byte` e `short` são promovidos a `int`, como em J
 * **Operadores Lógicos (`&&`, `||`, `!`)**: Requerem operandos `boolean` e resultam em `boolean`. `!` é unário; `&&` e `||` são binários.
 * **Condições de `if`, `while` e `for`**: A expressão condicional deve obrigatoriamente retornar o tipo `boolean`.
 * **Incremento/Decremento (`++`, `--`)**: A variável deve estar declarada e não pode ser do tipo `boolean` ou `String`.
+* **Inicialização de variáveis**: Variáveis podem ser declaradas sem valor inicial, mas não podem ser usadas em leituras ou operações antes de receberem uma atribuição.
+* **Atribuição composta**: `+=`, `-=`, `*=`, `/=` e `%=` exigem uma variável numérica declarada e um valor numérico.
+* **Comandos de salto**: `break` e `continue` são válidos apenas dentro de `while` ou `for`.
 * **Chamadas e Retornos**: Métodos chamados devem estar declarados na classe; o valor retornado deve ser compatível com o tipo de retorno do método, e métodos `void` não podem retornar valor.
 
 ---

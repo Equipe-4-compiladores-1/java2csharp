@@ -18,8 +18,9 @@ O projeto utiliza um fluxo de compilação em etapas desacopladas, validando reg
 - **Análise Léxica:** Conversão do código fonte `.java` em fluxo de tokens utilizando Flex.
 - **Análise Sintática e AST:** Validação gramatical e construção da Árvore de Sintaxe Abstrata (AST) via Bison.
 - **Análise Semântica:** Uso de Tabela de Símbolos para validar existência de variáveis, escopos de bloco aninhados, redefinições, conflitos de parâmetros e compatibilidade de tipos (atribuições, retornos, operações e condições).
-- **Estruturas de Controle:** Desvios condicionais (`if/else`) e laços de repetição (`while` e `for`).
-- **Operadores:** Aritméticos (`+`, `-`, `*`, `/`), relacionais (`==`, `!=`, `<`, `<=`, `>`, `>=`), lógicos (`&&`, `||`, `!`) e incremento/decremento pós-fixo (`++`, `--`).
+- **Estruturas de Controle:** Desvios condicionais (`if/else`), laços de repetição (`while` e `for`) e comandos `break` / `continue` dentro de laços.
+- **Vetores 1D:** Declaração, alocação dinâmica com `new`, leitura e atribuição por índice para vetores de tipos primitivos e `String`.
+- **Operadores:** Aritméticos (`+`, `-`, `*`, `/`, `%`), relacionais (`==`, `!=`, `<`, `<=`, `>`, `>=`), lógicos (`&&`, `||`, `!`), atribuição composta (`+=`, `-=`, `*=`, `/=`, `%=`) e incremento/decremento pré-fixo e pós-fixo (`++`, `--`).
 - **Geração de Código (Visitor Pattern):** Emissão de código C# percorrendo a AST hierárquica (comandos, expressões e funções).
 - **Cobertura Automatizada:** Integração com `gcovr` para relatórios detalhados de cobertura de testes no terminal e em HTML.
 
