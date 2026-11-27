@@ -12,6 +12,7 @@ private:
     std::string currentExprType;
     std::string currentFunctionReturnType;
     bool hasSemanticError = false;
+    int loopDepth = 0; // Quantidade de lacos (while/for) envolvendo o comando atual
 
     bool areTypesCompatible(const std::string& targetType, const std::string& sourceType);
     std::string getPromotedType(const std::string& type1, const std::string& type2, const std::string& op);

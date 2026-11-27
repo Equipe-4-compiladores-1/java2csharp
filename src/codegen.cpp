@@ -376,5 +376,16 @@ void CSharpCodegenVisitor::visit(ArrayAssignNode* node) {
     if (!inForHeader) std::cout << ";\n";
 }
 
-void CSharpCodegenVisitor::visit(BreakStmtNode* node) {}
-void CSharpCodegenVisitor::visit(ContinueStmtNode* node) {}
+// =========================================================================
+// 6. SALTOS (break / continue)
+// =========================================================================
+
+void CSharpCodegenVisitor::visit(BreakStmtNode* node) {
+    printIndent();
+    std::cout << "break;\n";
+}
+
+void CSharpCodegenVisitor::visit(ContinueStmtNode* node) {
+    printIndent();
+    std::cout << "continue;\n";
+}
