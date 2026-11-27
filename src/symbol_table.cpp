@@ -14,6 +14,17 @@ void SymbolTable::exitScope() {
     }
 }
 
+bool SymbolTable::markAsInitialized(const std::string& name) {
+    for (auto it = scopes.rbegin(); it != scopes.rend(); ++it) {
+        auto found = it->find(name);
+        if (found != it->end()) {
+            found->second.isInitialized = true;
+            return true;
+        }
+    }
+    return false;
+}
+
 bool SymbolTable::defineSymbol(const std::string& name, const SymbolInfo& info) {
     if (scopes.empty()) return false;
 
