@@ -58,6 +58,7 @@ O **Java2CSharp** é um transpilador desenvolvido para converter um subconjunto 
 * **Operadores:** aritméticos (`+`, `-`, `*`, `/`, `%`) e menos unário (`-x`), relacionais (`==`, `!=`, `<`, `<=`, `>`, `>=`), lógicos (`&&`, `||`, `!`), atribuição composta (`+=`, `-=`, `*=`, `/=`, `%=`) e incremento/decremento (`++`, `--`).
 * **Escopos de bloco:** cada método, bloco `if`/`else`, `while` e `for` abre um escopo próprio; variáveis declaradas dentro dele não são visíveis fora.
 * **Validação semântica de tipos:** variáveis não declaradas ou redefinidas, atribuições e retornos incompatíveis, alocações de array com tipos divergentes, indexação de variáveis escalares e condições não booleanas são rejeitadas antes da geração de código.
+* **Otimização de expressões constantes:** operações aritméticas, relacionais e lógicas cujos operandos são constantes são avaliadas após a análise semântica e antes da geração de C# (*constant folding*).
 * **Entrada e saída:** `System.out.print`, `println` e `printf` mapeados para `Console.Write` / `Console.WriteLine`.
 
 Detalhes de cada construção estão em **[Gramática & Tokens](gramatica.md)** e as regras de validação em **[Análise Semântica](analise-semantica.md)**.

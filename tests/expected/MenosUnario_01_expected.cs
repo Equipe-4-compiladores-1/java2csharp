@@ -6,7 +6,7 @@ namespace TranspiledProgram {
             int positivo = 12;
             int negativo = -12;
             int invertido = -positivo;
-            int precedencia = -2 * 3;
+            int precedencia = -6;
             int agrupado = -(positivo + 3);
             double fracao = -2.5;
             Console.WriteLine(negativo);

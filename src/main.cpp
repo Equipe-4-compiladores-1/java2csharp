@@ -6,6 +6,7 @@
 #include <vector>
 #include "ast.h"
 #include "codegen.h"
+#include "optimizer.h"
 #include "semantic_analyzer.h"
 
 extern FILE* yyin;
@@ -36,6 +37,8 @@ int main(int argc, char** argv) {
             std::cerr << "\nCompilação abortada devido a erros semânticos.\n" << std::endl;
             return 1;
         }
+
+        foldConstants(rootNode);
 
         // Redireciona o cout para um buffer de memória virtual
         std::stringstream buffer;
