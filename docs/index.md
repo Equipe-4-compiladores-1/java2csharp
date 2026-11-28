@@ -28,7 +28,7 @@ O **Java2CSharp** é um transpilador desenvolvido para converter um subconjunto 
 
     ---
 
-    Geração automática de uma classe wrapper estática (`public static class Program`) para adaptar funções Java ao C#.
+    Geração automática de uma classe wrapper estática com o mesmo nome da classe Java, adaptando funções Java ao C#.
 
 -   :material-sitemap: **AST Robusta**
 
@@ -49,7 +49,9 @@ O **Java2CSharp** é um transpilador desenvolvido para converter um subconjunto 
 ## :material-check-decagram: Capacidades Atuais
 
 * **Tipos primitivos:** `byte`, `short`, `int`, `long`, `float`, `double`, `boolean` e `char`, com promoção implícita de tipos numéricos (*widening*).
-* **Coleções de dados em memória (Arrays 1D):** declaração de vetores unidimensionais (`int[] arr`), alocação dinâmica com `new` (`new int[tamanho]`) e leitura/modificação por índices numéricos (`arr[i]`), integrados de forma nativa às iterações conjuntas com laços `for` e `while`.
+* **Mapeamento de `byte`:** variáveis e parâmetros escalares são gerados como `byte`; vetores `byte[]` são gerados como `sbyte[]`, preservando o intervalo com sinal do Java.
+* **Coleções de dados em memória (Arrays 1D):** declaração de vetores unidimensionais (`int[] arr`, `String[] nomes`), alocação dinâmica com `new` (`new int[tamanho]`) e leitura/modificação por índices numéricos (`arr[i]`), integrados às iterações com laços `for` e `while`.
+* **Comandos de salto:** `break` e `continue` dentro de `while` e `for`.
 * **Funções estáticas:** declaração de múltiplos métodos com parâmetros e retorno, e chamadas como comando ou dentro de expressões.
 * **Desvios condicionais:** `if` / `else`, inclusive aninhados.
 * **Laços de repetição:** `while` e `for` (com declaração da variável de controle no cabeçalho e percurso sequencial sobre vetores).

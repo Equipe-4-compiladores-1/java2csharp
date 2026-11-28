@@ -8,7 +8,7 @@ Para compilar o projeto, você precisará de uma cadeia de ferramentas C++ padr�
 
 Certifique-se de ter os seguintes pacotes instalados no seu sistema:
 * **GCC** (ou Clang) com suporte a C++17
-* **CMake** (versão 3.10 ou superior)
+* **CMake** (versão 3.12 ou superior)
 * **Flex** (Lexer)
 * **Bison** (Parser)
 

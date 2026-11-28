@@ -17,10 +17,11 @@ O fluxo de dados desde a leitura do arquivo `.java` até a geração do `.cs` oc
 A AST é o coração do transpilador. Em vez de emitir código C# imediatamente assim que uma regra é reconhecida no Bison, criamos nós hierárquicos em C++17. 
 
 Nós principais implementados em `ast.h`:
-* **Declarações:** `ClassDeclNode`, `FunctionDeclNode`, `VarDeclNode`.
-* **Comandos (Statements):** `PrintStmtNode`, `PrintfStmtNode`, `ReturnStmtNode`, `MethodCallStmtNode`, `AssignStmtNode`, `UnaryStmtNode`.
+* **Declarações:** `ClassDeclNode`, `FunctionDeclNode`, `VarDeclNode`, `ArrayDeclNode`.
+* **Alocação e acesso:** `ArrayAllocNode`, `ArrayAccessNode`, `ArrayAssignNode`.
+* **Comandos (Statements):** `PrintStmtNode`, `PrintfStmtNode`, `ReturnStmtNode`, `MethodCallStmtNode`, `AssignStmtNode`, `UnaryStmtNode`, `BreakStmtNode`, `ContinueStmtNode`.
 * **Controle de Fluxo:** `IfStmtNode`, `WhileStmtNode`, `ForStmtNode`.
-* **Expressões (Expressions):** `BinaryExprNode`, `ParenthesizedExprNode`, `LiteralNode`, `StringNode`, `MethodCallExprNode`.
+* **Expressões (Expressions):** `BinaryExprNode`, `UnaryExprNode`, `ParenthesizedExprNode`, `LiteralNode`, `StringNode`, `MethodCallExprNode`, `NumericUpdateExprNode`.
 
 !!! info "Por que usar o Padrão Visitor?"
     O padrão Visitor (`ASTVisitor`) permite que adicionemos novas funcionalidades (como um avaliador semântico) sem precisar alterar as classes da nossa AST. Toda a lógica de tradução para C# fica isolada no arquivo `codegen.cpp`, e a validação semântica em `semantic_analyzer.cpp`.

@@ -1,4 +1,4 @@
-# Gramática Suportada
+﻿# Gramática Suportada
 
 Como o escopo deste transpilador foca no paradigma procedural e estruturado da disciplina de Compiladores, suportamos um subconjunto restrito e direto da linguagem Java. 
 
@@ -11,7 +11,7 @@ O sistema de tipos suporta mapeamento direto para os tipos equivalentes do C#.
 
 | Java | C# gerado | Observação |
 | --- | --- | --- |
-| `byte` | `byte` | Inteiro de 8 bits. |
+| `byte` | `byte` / `sbyte` | Inteiro de 8 bits. Variáveis escalares são geradas como `byte`; vetores são gerados como `sbyte[]` para preservar o intervalo com sinal do Java. |
 | `short` | `short` | Inteiro de 16 bits. |
 | `int` | `int` | Tipo padrão dos literais inteiros (`10`, `42`). |
 | `long` | `long` | |
@@ -32,18 +32,23 @@ int somar(byte a, short b) {
 }
 ```
 
+!!! note "Diferença entre `byte` e `byte[]` no C# gerado"
+    O tipo Java `byte` é representado como `byte` nas declarações escalares e parâmetros atuais do código C# gerado. Já os elementos de vetores usam `sbyte[]`, porque `sbyte` corresponde ao inteiro de 8 bits com sinal do Java (`-128` a `127`), enquanto `byte` corresponde ao intervalo sem sinal (`0` a `255`) no C#.
+
+    Essa conversão vetorial é aplicada pelo codegen em `byte[]`; não representa uma conversão automática adicional dos elementos escalares.
+
 #### Comportamento Semântico de Tipos Vetorizados
 Quando um tipo é declarado como vetor unidimensional (`T[]`, como `int[]` ou `double[]`), a **Tabela de Símbolos** registra a variável preservando o modificador de dimensão no identificador de tipo (`"int[]"`, `"double[]"`):
 
 * **Invariância na alocação e atribuição:** Diferente das conversões implícitas de alargamento (*widening*) aplicadas a variáveis escalares (onde um `double` aceita um `int`), tipos vetorizados exigem correspondência exata de tipo base na alocação e atribuição (ex.: `double[] v = new int[5];` é rejeitado pelo analisador semântico).
 * **Extração do tipo base na indexação:** Ao ler ou atribuir um elemento via índice (`arr[i]`), o analisador verifica se a variável possui sufixo de dimensão `[]` (rejeitando indexação de variáveis escalares), exige que o índice seja compatível com `int` e resolve o tipo da expressão para o tipo base do elemento (`T`).
-* **Restrição de operadores escalares:** Operadores aritméticos (`+`, `-`, `*`, `/`) e de atualização numérica (`++`, `--`, `+=`) não podem ser aplicados diretamente sobre a referência do vetor (`arr++` ou `a + b`), apenas sobre seus elementos indexados (`arr[i]++`).
+* **Restrição de operadores escalares:** Operadores aritméticos (`+`, `-`, `*`, `/`) e de atualização numérica (`++`, `--`, `+=`) não podem ser aplicados diretamente sobre a referência do vetor (`arr++` ou `a + b`). Os elementos podem ser usados em expressões e receber atribuições simples, como `arr[i] = arr[i] + 1`; atualizações indexadas diretas ainda não são suportadas.
 
 !!! note "Tipos `byte` e `short`"
     Variáveis e parâmetros `byte`/`short` podem ser atribuídos a tipos maiores (`short`, `int`, `long`, `float`, `double`), e em expressões aritméticas são promovidos a `int`, como no Java. Como todo literal inteiro é tratado como `int`, uma declaração como `byte b = 1;` é rejeitada pelo analisador semântico — o valor deve vir de outra variável ou parâmetro `byte`.
 
 !!! warning "`String`"
-    `String` é reconhecido pelo lexer e literais de texto (`"..."`) podem ser usados em expressões e impressões, mas ainda **não** é possível declarar variáveis ou parâmetros do tipo `String` (o tipo só aparece na assinatura do `main`).
+    `String` é reconhecido pelo lexer e pode ser usado em variáveis, parâmetros escalares e vetores unidimensionais. Literais de texto (`"..."`) podem ser usados em expressões e impressões. Entretanto, ao passar uma String como parâmetro de um método, o transpilador ainda não faz todas as verificações realizadas para os tipos básicos.
 
 ### 2. Declaração de Classes e Main
 O ponto de entrada do programa exige uma classe base e o método estático por padrão.
@@ -77,18 +82,23 @@ Funções nativas de impressão são mapeadas para os métodos da classe `Consol
 * `System.out.println(...)` :material-arrow-right: `Console.WriteLine(...)`
 * `System.out.printf(...)` :material-arrow-right: `Console.Write(...)`, adaptando `%d`, `%f` etc. para os índices de formatação do C# (`{0}`, `{1}`, ...).
 
+Comentários de uma linha (`//`) e de bloco (`/* ... */`) são ignorados pelo lexer e não aparecem no C# gerado.
+
 ### 5. Variáveis e Atribuição
 
-Variáveis locais devem ser declaradas com valor inicial. Depois de declaradas, podem receber novos valores por atribuição simples.
+Variáveis locais podem ser declaradas com ou sem valor inicial. Quando não recebem um valor na declaração, devem ser inicializadas por atribuição antes do uso.
 
 ```java
 int contador = 0;
 contador = contador + 1;
+
+double resultado;
+resultado = 3.5;
 ```
 
 ### 6. Estruturas de Dados
 
-O transpilador oferece suporte a **coleções contíguas em memória** por meio de **vetores unidimensionais (Arrays 1D)** de tipos primitivos (`int[]`, `double[]`, `boolean[]`, `char[]`, etc.).
+O transpilador oferece suporte a **coleções contíguas em memória** por meio de **vetores unidimensionais (Arrays 1D)** de tipos primitivos (`int[]`, `double[]`, `boolean[]`, `char[]`, etc.) e de `String` (`String[]`).
 
 #### Declaração e Alocação Dinâmica (`new`)
 Um vetor pode ser declarado apenas com sua assinatura de tipo (para alocação posterior) ou já inicializado com o operador `new` e uma expressão inteira que define seu tamanho:
@@ -159,6 +169,23 @@ for (int j = 3; j > 0; j--) {
     System.out.printf("Decrescente: %d\n", j);
 }
 ```
+
+#### `break` / `continue`
+
+Os comandos `break` e `continue` são suportados dentro de blocos `while` e `for`:
+
+```java
+for (int i = 0; i < 10; i++) {
+    if (i % 2 == 0) {
+        continue;
+    }
+    if (i > 7) {
+        break;
+    }
+}
+```
+
+`break` encerra o laço atual e `continue` passa imediatamente para a próxima iteração. Ambos são rejeitados pelo analisador semântico quando aparecem fora de um laço.
 
 ??? example "Exemplo combinado e código C# gerado"
 
@@ -293,6 +320,9 @@ int soma = (valor += 2);
 
 Os alvos devem ser variáveis numéricas declaradas, e os valores das atribuições compostas também devem ser numéricos.
 
+!!! warning "Atualizações em elementos de vetores"
+    Nesta versão, a sintaxe de atualização numérica aceita o nome da variável diretamente (`valor++`, `valor += 2`, `++valor`). Elementos indexados podem ser lidos e receber atribuições simples, como `arr[i] = arr[i] + 1`, mas a forma direta `arr[i]++` ou `arr[i] += 2` ainda não é suportada pelo parser.
+
 ## :material-alert-circle-outline: Limitações Conhecidas
 
 Por se tratar de um transpilador focado no paradigma imperativo, os seguintes recursos do Java **não são suportados**:
@@ -300,9 +330,8 @@ Por se tratar de um transpilador focado no paradigma imperativo, os seguintes re
 * Criação e instância de objetos (`new Objeto()`).
 * Herança, interfaces e polimorfismo (`extends`, `implements`).
 * Modificadores de acesso granulares em variáveis (`private`, `protected`).
-* Declaração comum de variáveis e parâmetros do tipo `String`. Literais de String e o parâmetro `String[] args` do `main` são tratados pelo transpilador.
+* Parâmetros comuns do tipo `String` ainda não possuem validação completa equivalente à dos tipos primitivos; literais de String e o parâmetro `String[] args` do `main` são tratados pelo transpilador.
 * `else if` encadeado, `do-while` e `switch`.
-* Declaração de variáveis sem valor inicial (`int x;`).
 * Arrays multidimensionais (`int[][]`), inicialização literal com chaves (`{1, 2, 3}`) e sintaxe de colchetes após o nome da variável (`int arr[]`).
 
 ---

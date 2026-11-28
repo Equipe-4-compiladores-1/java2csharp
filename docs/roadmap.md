@@ -40,11 +40,17 @@ for (int i = 0; i < n; i++) { ... }
 * **Objetivo:** Reconhecer os operadores de atribuição composta no lexer/parser e traduzi-los para C#.
 * **Situação atual:** Suportados para variáveis numéricas e valores numéricos, como comandos ou em expressões.
 
-### 6. Vetores Primitivos Unidimensionais (Arrays 1D) — :material-check-all: *Concluído*
+### 6. Vetores Unidimensionais (Arrays 1D) — :material-check-all: *Concluído*
 
 * **Objetivo:** Suportar declaração, alocação dinâmica com `new` e leitura/escrita por índice numérico em coleções 1D.
 * **Gramática & AST:** Nós `ArrayDeclNode`, `ArrayAllocNode`, `ArrayAccessNode` e `ArrayAssignNode`.
 * **Análise Semântica & Codegen:** Registro de tipos vetorizados (`int[]`, `double[]`, etc.) na Tabela de Símbolos, checagem de compatibilidade na alocação, validação de índices inteiros, bloqueio de indexação em variáveis escalares e tradução direta para C#.
+
+### 7. Comandos de Salto (`break` / `continue`) — :material-check-all: *Concluído*
+
+* **Objetivo:** Permitir encerrar um laço ou avançar diretamente para a próxima iteração.
+* **AST:** Nós `BreakStmtNode` e `ContinueStmtNode`.
+* **Análise Semântica:** Rejeita `break` e `continue` fora de `while` e `for`.
 
 ---
 
@@ -55,6 +61,6 @@ for (int i = 0; i < n; i++) { ... }
 | **Sprint 1** | **Fundação & E/S Procedural** | :material-check-circle: Concluída | • AST básica e padrão Visitor<br>• Tipos primitivos e variáveis locais<br>• Funções e métodos estáticos (`#1`)<br>• E/S básica (`print`, `println`, `printf`) |
 | **Sprint 2** | **Desvios & Análise Semântica** | :material-check-circle: Concluída | • Bloco condicional (`if/else`) (`#2`)<br>• Operadores relacionais (`==`, `!=`, `<`, `<=`, `>`, `>=`)<br>• Tabela de Símbolos com escopos aninhados<br>• Checagem e promoção de tipos (`refactor/checagem-tipos`) |
 | **Sprint 3** | **Laços de Repetição & Operadores** | :material-check-circle: Concluída | • :material-check: Laços de repetição (`while` e `for`) (`#43`)<br>• :material-check: Operadores de incremento/decremento (`++`, `--`)<br>• :material-check: Tipos primitivos `byte` e `short`<br>• :material-check: Atribuição composta (`+=`, `-=`, `*=`, `/=`, `%=`)<br>• Documentação da sprint (`#38`) |
-| **Sprint 4** | **Vetores Primitivos & Ajustes** | :material-check-circle: Concluída | • :material-check: Suporte a arrays 1D de tipos primitivos (ex: `int[] arr`, `new int[n]`, `arr[i]`)<br>• :material-check: Validação semântica e geração de código C# para coleções 1D<br>• :material-check: Suíte de testes e documentação oficial da Sprint 4 |
+| **Sprint 4** | **Vetores 1D & Ajustes** | :material-check-circle: Concluída | • :material-check: Suporte a arrays 1D de tipos primitivos e `String` (ex: `int[] arr`, `new int[n]`, `arr[i]`)<br>• :material-check: Validação semântica e geração de código C# para coleções 1D<br>• :material-check: Suíte de testes e documentação oficial da Sprint 4 |
 
 ---
