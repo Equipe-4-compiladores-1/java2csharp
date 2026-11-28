@@ -52,10 +52,9 @@ for (int i = 0; i < n; i++) { ... }
 * **AST:** Nós `BreakStmtNode` e `ContinueStmtNode`.
 * **Análise Semântica:** Rejeita `break` e `continue` fora de `while` e `for`.
 
-### 8. Otimização de Código — :material-progress-clock: *Em andamento*
+### 8. Otimização de Código
 
-* **Concluído:** *Constant folding* de expressões aritméticas, relacionais e lógicas compostas por constantes.
-* **Próximas etapas:** *Constant propagation*, eliminação de código morto (DCE) e eliminação de subexpressões comuns (CSE).
+* **Objetivo:** *Constant folding* de expressões aritméticas, relacionais e lógicas compostas por constantes.
 
 ---
 
