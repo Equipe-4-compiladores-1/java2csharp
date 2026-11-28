@@ -786,6 +786,8 @@
 </tbody>
 </table>
 <p>Em expressões aritméticas, <code>byte</code> e <code>short</code> são promovidos a <code>int</code>, como em Java.</p>
+<p>Vetores 1D possuem correspondência exata de tipo base na declaração e na alocação. Por exemplo, <code>double[] v = new int[5];</code> é rejeitado. A indexação exige um índice compatível com <code>int</code> e transforma o tipo vetorizado no tipo de seu elemento. Vetores não podem ser usados diretamente como valores aritméticos.</p>
+<p>Na geração de código C#, <code>byte</code> escalares são preservados como <code>byte</code>, enquanto vetores <code>byte[]</code> são traduzidos para <code>sbyte[]</code>, porque <code>sbyte</code> representa o intervalo com sinal do tipo Java <code>byte</code>.</p>
 <h3 id="3-validacao-de-expressoes-e-operadores">3. Validação de Expressões e Operadores</h3>
 <ul>
 <li><strong>Operadores Aritméticos (<code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, <code>%</code>)</strong>: Requerem operandos numéricos compatíveis. A operação promove o tipo do resultado para o maior tipo envolvido.</li>
@@ -795,6 +797,9 @@
 <li><strong>Operadores Lógicos (<code>&amp;&amp;</code>, <code>||</code>, <code>!</code>)</strong>: Requerem operandos <code>boolean</code> e resultam em <code>boolean</code>. <code>!</code> é unário; <code>&amp;&amp;</code> e <code>||</code> são binários.</li>
 <li><strong>Condições de <code>if</code>, <code>while</code> e <code>for</code></strong>: A expressão condicional deve obrigatoriamente retornar o tipo <code>boolean</code>.</li>
 <li><strong>Incremento/Decremento (<code>++</code>, <code>--</code>)</strong>: A variável deve estar declarada e não pode ser do tipo <code>boolean</code> ou <code>String</code>.</li>
+<li><strong>Inicialização de variáveis</strong>: Variáveis podem ser declaradas sem valor inicial, mas não podem ser usadas em leituras ou operações antes de receberem uma atribuição.</li>
+<li><strong>Atribuição composta</strong>: <code>+=</code>, <code>-=</code>, <code>*=</code>, <code>/=</code> e <code>%=</code> exigem uma variável numérica declarada e um valor numérico.</li>
+<li><strong>Comandos de salto</strong>: <code>break</code> e <code>continue</code> são válidos apenas dentro de <code>while</code> ou <code>for</code>.</li>
 <li><strong>Chamadas e Retornos</strong>: Métodos chamados devem estar declarados na classe; o valor retornado deve ser compatível com o tipo de retorno do método, e métodos <code>void</code> não podem retornar valor.</li>
 </ul>
 <hr />

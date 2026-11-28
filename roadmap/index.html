@@ -623,10 +623,32 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#6-vetores-primitivos-unidimensionais-arrays-1d-concluido" class="md-nav__link">
+  <a href="#6-vetores-unidimensionais-arrays-1d-concluido" class="md-nav__link">
     <span class="md-ellipsis">
       
-        6. Vetores Primitivos Unidimensionais (Arrays 1D) — Concluído
+        6. Vetores Unidimensionais (Arrays 1D) — Concluído
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-comandos-de-salto-break-continue-concluido" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Comandos de Salto (break / continue) — Concluído
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-otimizacao-de-codigo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Otimização de Código
       
     </span>
   </a>
@@ -751,10 +773,32 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#6-vetores-primitivos-unidimensionais-arrays-1d-concluido" class="md-nav__link">
+  <a href="#6-vetores-unidimensionais-arrays-1d-concluido" class="md-nav__link">
     <span class="md-ellipsis">
       
-        6. Vetores Primitivos Unidimensionais (Arrays 1D) — Concluído
+        6. Vetores Unidimensionais (Arrays 1D) — Concluído
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-comandos-de-salto-break-continue-concluido" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Comandos de Salto (break / continue) — Concluído
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-otimizacao-de-codigo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Otimização de Código
       
     </span>
   </a>
@@ -831,11 +875,21 @@
 <li><strong>Objetivo:</strong> Reconhecer os operadores de atribuição composta no lexer/parser e traduzi-los para C#.</li>
 <li><strong>Situação atual:</strong> Suportados para variáveis numéricas e valores numéricos, como comandos ou em expressões.</li>
 </ul>
-<h3 id="6-vetores-primitivos-unidimensionais-arrays-1d-concluido">6. Vetores Primitivos Unidimensionais (Arrays 1D) — <span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M.41 13.41 6 19l1.41-1.42L1.83 12m20.41-6.42L11.66 16.17 7.5 12l-1.43 1.41L11.66 19l12-12M18 7l-1.41-1.42-6.35 6.35 1.42 1.41z"/></svg></span> <em>Concluído</em></h3>
+<h3 id="6-vetores-unidimensionais-arrays-1d-concluido">6. Vetores Unidimensionais (Arrays 1D) — <span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M.41 13.41 6 19l1.41-1.42L1.83 12m20.41-6.42L11.66 16.17 7.5 12l-1.43 1.41L11.66 19l12-12M18 7l-1.41-1.42-6.35 6.35 1.42 1.41z"/></svg></span> <em>Concluído</em></h3>
 <ul>
 <li><strong>Objetivo:</strong> Suportar declaração, alocação dinâmica com <code>new</code> e leitura/escrita por índice numérico em coleções 1D.</li>
 <li><strong>Gramática &amp; AST:</strong> Nós <code>ArrayDeclNode</code>, <code>ArrayAllocNode</code>, <code>ArrayAccessNode</code> e <code>ArrayAssignNode</code>.</li>
 <li><strong>Análise Semântica &amp; Codegen:</strong> Registro de tipos vetorizados (<code>int[]</code>, <code>double[]</code>, etc.) na Tabela de Símbolos, checagem de compatibilidade na alocação, validação de índices inteiros, bloqueio de indexação em variáveis escalares e tradução direta para C#.</li>
+</ul>
+<h3 id="7-comandos-de-salto-break-continue-concluido">7. Comandos de Salto (<code>break</code> / <code>continue</code>) — <span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M.41 13.41 6 19l1.41-1.42L1.83 12m20.41-6.42L11.66 16.17 7.5 12l-1.43 1.41L11.66 19l12-12M18 7l-1.41-1.42-6.35 6.35 1.42 1.41z"/></svg></span> <em>Concluído</em></h3>
+<ul>
+<li><strong>Objetivo:</strong> Permitir encerrar um laço ou avançar diretamente para a próxima iteração.</li>
+<li><strong>AST:</strong> Nós <code>BreakStmtNode</code> e <code>ContinueStmtNode</code>.</li>
+<li><strong>Análise Semântica:</strong> Rejeita <code>break</code> e <code>continue</code> fora de <code>while</code> e <code>for</code>.</li>
+</ul>
+<h3 id="8-otimizacao-de-codigo">8. Otimização de Código</h3>
+<ul>
+<li><strong>Objetivo:</strong> <em>Constant folding</em> de expressões aritméticas, relacionais e lógicas compostas por constantes.</li>
 </ul>
 <hr />
 <h2 id="planejamento-de-sprints-backlog-imperativo">Planejamento de Sprints (Backlog Imperativo)</h2>
@@ -869,9 +923,9 @@
 </tr>
 <tr>
 <td><strong>Sprint 4</strong></td>
-<td><strong>Vetores Primitivos &amp; Ajustes</strong></td>
+<td><strong>Vetores 1D &amp; Ajustes</strong></td>
 <td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2m-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8z"/></svg></span> Concluída</td>
-<td>• <span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59z"/></svg></span> Suporte a arrays 1D de tipos primitivos (ex: <code>int[] arr</code>, <code>new int[n]</code>, <code>arr[i]</code>)<br>• <span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59z"/></svg></span> Validação semântica e geração de código C# para coleções 1D<br>• <span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59z"/></svg></span> Suíte de testes e documentação oficial da Sprint 4</td>
+<td>• <span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59z"/></svg></span> Suporte a arrays 1D de tipos primitivos e <code>String</code> (ex: <code>int[] arr</code>, <code>new int[n]</code>, <code>arr[i]</code>)<br>• <span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59z"/></svg></span> Validação semântica e geração de código C# para coleções 1D<br>• <span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59z"/></svg></span> Suíte de testes e documentação oficial da Sprint 4</td>
 </tr>
 </tbody>
 </table>
